@@ -8,7 +8,29 @@
 
 /* Begin PBXBuildFile section */
 		F89E03482D797CDA0024CCCD /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F89E03472D797CDA0024CCCD /* .gitignore */; };
+		F89E03CD2D79818A0024CCCD /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03CC2D79818A0024CCCD /* SnapKit */; };
+		F89E03D02D7981DD0024CCCD /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03CF2D7981DD0024CCCD /* Kingfisher */; };
+		F89E03D32D7982F10024CCCD /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03D22D7982F10024CCCD /* RxCocoa */; };
+		F89E03D52D7982F10024CCCD /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03D42D7982F10024CCCD /* RxSwift */; };
+		F89E03D82D7983D00024CCCD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03D72D7983D00024CCCD /* RealmSwift */; };
+		F89E03D92D7983FB0024CCCD /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F89E03D72D7983D00024CCCD /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F89E03DD2D7985540024CCCD /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03DC2D7985540024CCCD /* Toast */; };
+		F89E03E02D79869B0024CCCD /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = F89E03DF2D79869B0024CCCD /* Reachability */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F89E03DA2D7983FB0024CCCD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F89E03D92D7983FB0024CCCD /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		F89E02632D796EEB0024CCCD /* ios-coin-pedia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-coin-pedia.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,6 +63,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F89E03DD2D7985540024CCCD /* Toast in Frameworks */,
+				F89E03E02D79869B0024CCCD /* Reachability in Frameworks */,
+				F89E03D32D7982F10024CCCD /* RxCocoa in Frameworks */,
+				F89E03D02D7981DD0024CCCD /* Kingfisher in Frameworks */,
+				F89E03D52D7982F10024CCCD /* RxSwift in Frameworks */,
+				F89E03D82D7983D00024CCCD /* RealmSwift in Frameworks */,
+				F89E03CD2D79818A0024CCCD /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +103,7 @@
 				F89E025F2D796EEB0024CCCD /* Sources */,
 				F89E02602D796EEB0024CCCD /* Frameworks */,
 				F89E02612D796EEB0024CCCD /* Resources */,
+				F89E03DA2D7983FB0024CCCD /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -84,6 +114,13 @@
 			);
 			name = "ios-coin-pedia";
 			packageProductDependencies = (
+				F89E03CC2D79818A0024CCCD /* SnapKit */,
+				F89E03CF2D7981DD0024CCCD /* Kingfisher */,
+				F89E03D22D7982F10024CCCD /* RxCocoa */,
+				F89E03D42D7982F10024CCCD /* RxSwift */,
+				F89E03D72D7983D00024CCCD /* RealmSwift */,
+				F89E03DC2D7985540024CCCD /* Toast */,
+				F89E03DF2D79869B0024CCCD /* Reachability */,
 			);
 			productName = "ios-coin-pedia";
 			productReference = F89E02632D796EEB0024CCCD /* ios-coin-pedia.app */;
@@ -113,6 +150,14 @@
 			);
 			mainGroup = F89E025A2D796EEB0024CCCD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F89E03CB2D79818A0024CCCD /* XCRemoteSwiftPackageReference "SnapKit" */,
+				F89E03CE2D7981DD0024CCCD /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				F89E03D12D7982F10024CCCD /* XCRemoteSwiftPackageReference "RxSwift" */,
+				F89E03D62D7983D00024CCCD /* XCRemoteSwiftPackageReference "realm-swift" */,
+				F89E03DB2D7985540024CCCD /* XCRemoteSwiftPackageReference "Toast-Swift" */,
+				F89E03DE2D79869B0024CCCD /* XCRemoteSwiftPackageReference "Reachability.swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F89E02642D796EEB0024CCCD /* Products */;
 			projectDirPath = "";
@@ -356,6 +401,95 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F89E03CB2D79818A0024CCCD /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		F89E03CE2D7981DD0024CCCD /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.0;
+			};
+		};
+		F89E03D12D7982F10024CCCD /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.9.0;
+			};
+		};
+		F89E03D62D7983D00024CCCD /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 20.0.1;
+			};
+		};
+		F89E03DB2D7985540024CCCD /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scalessec/Toast-Swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
+		F89E03DE2D79869B0024CCCD /* XCRemoteSwiftPackageReference "Reachability.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 5.2.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F89E03CC2D79818A0024CCCD /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03CB2D79818A0024CCCD /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		F89E03CF2D7981DD0024CCCD /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03CE2D7981DD0024CCCD /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		F89E03D22D7982F10024CCCD /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03D12D7982F10024CCCD /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		F89E03D42D7982F10024CCCD /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03D12D7982F10024CCCD /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		F89E03D72D7983D00024CCCD /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03D62D7983D00024CCCD /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		F89E03DC2D7985540024CCCD /* Toast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03DB2D7985540024CCCD /* XCRemoteSwiftPackageReference "Toast-Swift" */;
+			productName = Toast;
+		};
+		F89E03DF2D79869B0024CCCD /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F89E03DE2D79869B0024CCCD /* XCRemoteSwiftPackageReference "Reachability.swift" */;
+			productName = Reachability;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F89E025B2D796EEB0024CCCD /* Project object */;
 }
