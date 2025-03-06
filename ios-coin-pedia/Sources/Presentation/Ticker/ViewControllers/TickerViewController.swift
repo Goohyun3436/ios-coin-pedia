@@ -13,6 +13,8 @@ final class TickerViewController: BaseViewController {
     private let mainView = TickerView()
     private let viewModel = TickerViewModel()
     
+    let searchBar = RoundSearchBar()
+    
     //MARK: - Override Method
     override func loadView() {
         view = mainView
@@ -20,6 +22,8 @@ final class TickerViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.titleView = searchBar
     }
     
     //MARK: - Setup Method
