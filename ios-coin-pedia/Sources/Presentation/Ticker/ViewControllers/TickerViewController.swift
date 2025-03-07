@@ -6,14 +6,14 @@
 //
 
 import UIKit
+import RxSwift
 
 final class TickerViewController: BaseViewController {
     
     //MARK: - Property
     private let mainView = TickerView()
     private let viewModel = TickerViewModel()
-    
-    let searchBar = RoundSearchBar()
+    private let disposeBag = DisposeBag()
     
     //MARK: - Override Method
     override func loadView() {
@@ -22,8 +22,6 @@ final class TickerViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        navigationItem.titleView = searchBar
     }
     
     //MARK: - Setup Method

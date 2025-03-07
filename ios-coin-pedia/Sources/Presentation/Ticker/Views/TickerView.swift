@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import SnapKit
 
 final class TickerView: BaseView {
     
     //MARK: - UI Property
+    
     
     //MARK: - Setup Method
     override func setupUI() {
