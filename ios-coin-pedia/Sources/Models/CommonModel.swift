@@ -43,10 +43,10 @@ struct VolatilityInfo {
             
             if percentage < 0 {
                 icon = AppIcon.arrowDown
-                color = AppColor.red
+                color = AppColor.blue
             } else if 0 < percentage {
                 icon = AppIcon.arrowUp
-                color = AppColor.blue
+                color = AppColor.red
             } else {
                 icon = nil
                 color = AppColor.navy
@@ -58,7 +58,7 @@ struct VolatilityInfo {
         func getValue() -> (String, String?) {
             let value: Double
             let text: String
-            let subText: String?
+            var subText: String? = nil
             
             switch type {
             case .percentage:
@@ -69,9 +69,44 @@ struct VolatilityInfo {
             }
             
             text = String(format: "%.2f", value) + "%"
-            subText = price?.formatted()
+            
+            if let price {
+                switch NumberType(price) {
+                case .int:
+                    subText = price.formatted()
+                case .double1f, .double2f:
+                    subText = String(format: "%.2f", price)
+                case .zero:
+                    subText = "0"
+                }
+            }
             
             return (text, subText)
+        }
+    }
+}
+
+enum NumberType {
+    case int
+    case double1f
+    case double2f
+    case zero
+    
+    init(_ num: Double) {
+        if num == 0 {
+            self = .zero
+            return
+        }
+        
+        if num == Double(Int(num)) {
+            self = .int
+            return
+        }
+        
+        if let last = String(format: "%.2f", num).last, last == "0" {
+            self = .double1f
+        } else {
+            self = .double2f
         }
     }
 }

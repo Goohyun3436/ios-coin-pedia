@@ -91,27 +91,31 @@ private final class TickerSortButtonView: BaseView {
     }
     
     override func setupConstraints() {
+        let margin: CGFloat = 2
+        let iconSize = CGSize(width: 6, height: 10)
+        
         titleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(4)
+            make.verticalEdges.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
         }
         
         [arrowUpIcon, arrowDownIcon].forEach {
             $0.snp.makeConstraints { make in
-                make.width.equalTo(5)
-                make.height.equalTo(10)
+                make.width.equalTo(iconSize.width)
+                make.height.equalTo(iconSize.height)
             }
         }
 
         arrowWrap.snp.makeConstraints { make in
-            make.top.bottom.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(1)
-            make.trailing.equalToSuperview().inset(4)
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(titleLabel.snp.trailing).offset(margin)
+            make.trailing.equalToSuperview()
         }
     }
     
     override func setupAttributes() {
         isUserInteractionEnabled = false
+        backgroundColor = AppColor.clear.value
         [arrowUpIcon, arrowDownIcon].forEach {
             $0.contentMode = .scaleToFill
             $0.tintColor = AppColor.navy.value

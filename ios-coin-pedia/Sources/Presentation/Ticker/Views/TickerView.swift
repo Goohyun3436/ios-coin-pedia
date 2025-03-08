@@ -11,24 +11,37 @@ import SnapKit
 final class TickerView: BaseView {
     
     //MARK: - UI Property
-    let view = IconImageView(.large)
+    let headerView = TickerHeaderView()
+    let tableView = {
+        let view = UITableView()
+        view.register(TickerTableViewCell.self, forCellReuseIdentifier: TickerTableViewCell.id)
+        return view
+    }()
     
     //MARK: - Setup Method
     override func setupUI() {
-        addSubview(view)
-        
-        view.snp.makeConstraints { make in
-            make.center.equalTo(safeAreaLayoutGuide)
-            make.size.equalTo(AppImageSize.large.value.width)
+        [headerView, tableView].forEach {
+            addSubview($0)
         }
     }
     
     override func setupConstraints() {
+        let headerH: CGFloat = 34
         
+        headerView.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalTo(safeAreaLayoutGuide)
+            make.height.equalTo(headerH)
+        }
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
     }
     
     override func setupAttributes() {
-        
+        tableView.rowHeight = 44
+//        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
     }
     
 }

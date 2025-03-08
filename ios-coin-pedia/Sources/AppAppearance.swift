@@ -16,6 +16,7 @@ enum AppColor {
     case overlay
     case white
     case black
+    case clear
     
     var value: UIColor {
         switch self {
@@ -35,6 +36,8 @@ enum AppColor {
             return UIColor.white
         case .black:
             return UIColor.black
+        case .clear:
+            return UIColor.clear
         }
     }
 }

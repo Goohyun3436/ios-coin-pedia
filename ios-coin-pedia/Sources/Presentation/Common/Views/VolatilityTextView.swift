@@ -30,13 +30,12 @@ final class VolatilityTextView: BaseView {
     
     override func setupConstraints() {
         label.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.top.trailing.equalToSuperview()
         }
         
         subLabel.snp.makeConstraints { make in
             make.top.equalTo(label.snp.bottom).offset(4)
-            make.trailing.equalToSuperview()
+            make.trailing.bottom.equalToSuperview()
         }
     }
     

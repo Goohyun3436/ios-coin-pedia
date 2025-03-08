@@ -24,14 +24,32 @@ final class TickerViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let vc = ModalViewController()
-        vc.modalPresentationStyle = .overCurrentContext
-        present(vc, animated: true)
+        
     }
     
     //MARK: - Setup Method
     override func setupBind() {
+        mainView.headerView.titleLabel.text = "코인"
+        mainView.headerView.priceSort.status.accept(.normal)
+        mainView.headerView.changeSort.status.accept(.normal)
+        mainView.headerView.accPriceSort.status.accept(.dsc)
         
+        dump(testMockMarketData)
+        print(testMockMarketData[0].price)
+        dump(testMockMarketData[0].volatility)
+        print(testMockMarketData[0].accPrice)
+        
+        Observable.just(mockMarketData)
+            .bind(
+                to: mainView.tableView.rx.items(
+                    cellIdentifier: TickerTableViewCell.id,
+                    cellType: TickerTableViewCell.self
+                ),
+                curriedArgument: { row, element, cell in
+                    cell.setData(element)
+                }
+            )
+            .disposed(by: disposeBag)
     }
     
 }

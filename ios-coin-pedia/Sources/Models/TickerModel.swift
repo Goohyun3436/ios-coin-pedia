@@ -18,3 +18,10 @@ enum TickerSortStatus {
     case asc
     case dsc
 }
+
+struct TickerInfo {
+    let market: String
+    let price: String
+    let volatility: VolatilityInfo
+    let accPrice: String
+}
