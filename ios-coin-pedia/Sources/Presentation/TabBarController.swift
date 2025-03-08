@@ -48,11 +48,11 @@ private enum TabBar: String, CaseIterable {
     var icon: String {
         switch self {
         case .ticker:
-            return AppIcon.ticker
+            return AppIcon.ticker.value
         case .trending:
-            return AppIcon.trending
+            return AppIcon.trending.value
         case .user:
-            return AppIcon.star
+            return AppIcon.star.value
         }
     }
 }

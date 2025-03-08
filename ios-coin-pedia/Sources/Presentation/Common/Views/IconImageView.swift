@@ -9,8 +9,19 @@ import UIKit
 
 final class IconImageView: UIImageView {
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(_ iconSize: AppImageSize) {
+        super.init(frame: CGRect(origin: .zero, size: iconSize.value))
+        
+        let rect = iconSize.value
+        
+        switch iconSize {
+        case .large:
+            layer.cornerRadius = rect.width / 4
+        case .small, .thumb:
+            layer.cornerRadius = rect.width / 2
+        }
+        
+        contentMode = .scaleAspectFill
     }
     
     required init?(coder: NSCoder) {

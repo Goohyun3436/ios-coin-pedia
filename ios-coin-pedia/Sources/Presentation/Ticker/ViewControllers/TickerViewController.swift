@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 final class TickerViewController: BaseViewController {
     
@@ -22,6 +23,10 @@ final class TickerViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let vc = ModalViewController()
+        vc.modalPresentationStyle = .overCurrentContext
+        present(vc, animated: true)
     }
     
     //MARK: - Setup Method

@@ -11,11 +11,16 @@ import SnapKit
 final class TickerView: BaseView {
     
     //MARK: - UI Property
-    
+    let view = IconImageView(.large)
     
     //MARK: - Setup Method
     override func setupUI() {
+        addSubview(view)
         
+        view.snp.makeConstraints { make in
+            make.center.equalTo(safeAreaLayoutGuide)
+            make.size.equalTo(AppImageSize.large.value.width)
+        }
     }
     
     override func setupConstraints() {

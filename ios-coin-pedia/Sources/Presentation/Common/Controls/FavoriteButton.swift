@@ -11,6 +11,9 @@ final class FavoriteButton: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setImage(UIImage(systemName: AppIcon.star.value), for: .normal)
+        setImage(UIImage(systemName: AppIcon.starFill.value), for: .selected)
+        tintColor = AppColor.navy.value
     }
     
     required init?(coder: NSCoder) {
