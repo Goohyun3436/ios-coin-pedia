@@ -7,9 +7,10 @@
 
 import Foundation
 
-enum SectionHeaderType {
-    case detailText
-    case detailButton
+enum SectionHeaderAccessoryType {
+    case none
+    case subText
+    case button
 }
 
 //MARK: - Volatility

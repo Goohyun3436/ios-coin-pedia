@@ -13,6 +13,7 @@ final class RoundSearchBar: UISearchBar {
         super.init(frame: frame)
         layer.borderWidth = 1
         layer.borderColor = AppColor.lightNavy.value.cgColor
+        searchTextField.font = AppFont.title4.value
     }
     
     override func draw(_ rect: CGRect) {

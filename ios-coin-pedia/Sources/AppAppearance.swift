@@ -47,6 +47,7 @@ enum AppFont {
     case title1
     case title2
     case title3
+    case title4
     case text1
     case text2
     case subText1
@@ -63,6 +64,8 @@ enum AppFont {
             return UIFont.systemFont(ofSize: 14, weight: .bold)
         case .title3:
             return UIFont.systemFont(ofSize: 13, weight: .bold)
+        case .title4:
+            return UIFont.systemFont(ofSize: 13)
         case .text1:
             return UIFont.systemFont(ofSize: 12, weight: .bold)
         case .text2:
@@ -87,6 +90,7 @@ enum AppIcon {
     case arrowLeft
     case ticker
     case trending
+    case questionMark
     
     var value: String {
         switch self {
@@ -108,6 +112,8 @@ enum AppIcon {
             return "chart.line.uptrend.xyaxis"
         case .trending:
             return "chart.bar.fill"
+        case .questionMark:
+            return "questionmark"
         }
     }
 }
@@ -169,10 +175,12 @@ final class AppAppearance {
         UITextField.appearance().textColor = AppColor.navy.value
         UITextField.appearance().keyboardAppearance = UIKeyboardAppearance.light
         
+        UISearchBar.appearance().barStyle = .default
         UISearchBar.appearance().barTintColor = AppColor.white.value
-        UISearchTextField.appearance().tintColor = AppColor.navy.value
-        UISearchTextField.appearance().backgroundColor = AppColor.white.value
+        UISearchBar.appearance().backgroundImage = UIImage()
         UISearchBar.appearance().keyboardAppearance = UIKeyboardAppearance.light
+        UISearchTextField.appearance().backgroundColor = AppColor.white.value
+        UISearchTextField.appearance().tintColor = AppColor.navy.value
         
         UITableView.appearance().backgroundColor = AppColor.white.value
         UITableView.appearance().separatorColor = AppColor.white.value

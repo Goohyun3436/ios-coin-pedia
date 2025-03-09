@@ -43,7 +43,7 @@ final class NetworkManager {
                 return disposables
             }
             
-//            print(urlRequest)
+            print(urlRequest)
             
             URLSession.shared.dataTask(with: urlRequest) { data, response, err in
                 

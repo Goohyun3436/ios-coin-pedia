@@ -11,24 +11,27 @@ import SnapKit
 final class SectionHeaderView: BaseView {
     
     //MARK: - UI Property
-    private let titleLabel = AppLabel(.title2)
+    let titleLabel = AppLabel(.title2)
     private let accessoryView = UIStackView()
-    private let detailLabel = AppLabel(.text2, .lightNavy)
+    let detailLabel = AppLabel(.text2, .lightNavy)
     private let detailButton = DetailButton()
     
     //MARK: - Initializer Method
     init(
-        _ type: SectionHeaderType,
-        title: String?,
+        _ type: SectionHeaderAccessoryType,
+        title: String? = nil,
         detailText: String? = nil
     ) {
         super.init(frame: .zero)
         
         switch type {
-        case .detailText:
+        case .none:
+            detailLabel.isHidden = true
+            detailButton.isHidden = true
+        case .subText:
             detailButton.isHidden = true
             detailLabel.text = detailText
-        case .detailButton:
+        case .button:
             detailLabel.isHidden = true
         }
         

@@ -38,13 +38,13 @@ struct CGCoinPriceChangePercentage24h: Decodable {
 struct CGNftInfo: Decodable {
     let id: String
     let name: String
-    let symbol: String
     let thumb: String
+    let floor_price_24h_percentage_change: Double
     let data: CGNftDataInfo
 }
 
 struct CGNftDataInfo: Decodable {
-    let floor_price_in_usd_24h_percentage_change: String
+//    let floor_price_in_usd_24h_percentage_change: String
     let h24_average_sale_price: String
 }
 
@@ -59,6 +59,7 @@ struct CGSearchCoinInfo: Decodable {
     let symbol: String
     let market_cap_rank: Int
     let thumb: String
+    let score: Int
 }
 
 //MARK: - Markets

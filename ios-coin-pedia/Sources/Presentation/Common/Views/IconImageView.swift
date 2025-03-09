@@ -22,6 +22,9 @@ final class IconImageView: UIImageView {
         }
         
         contentMode = .scaleAspectFill
+        clipsToBounds = true
+        backgroundColor = AppColor.lightGray.value
+        tintColor = AppColor.navy.value
     }
     
     required init?(coder: NSCoder) {
