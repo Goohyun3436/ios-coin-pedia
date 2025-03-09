@@ -7,7 +7,6 @@
 
 import UIKit
 import RxSwift
-import RxCocoa
 
 final class TickerViewController: BaseViewController {
     
@@ -23,23 +22,40 @@ final class TickerViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
     }
     
     //MARK: - Setup Method
     override func setupBind() {
-        mainView.headerView.titleLabel.text = "코인"
+        let input = TickerViewModel.Input(
+            viewWillAppear: rx.viewWillAppear,
+            viewDidDisappear: rx.viewDidDisappear,
+            priceSortTap: mainView.headerView.priceSort.rx.tap,
+            changeSortTap: mainView.headerView.changeSort.rx.tap,
+            accPriceSortTap: mainView.headerView.accPriceSort.rx.tap
+        )
+        let output = viewModel.transform(input: input)
+        
         mainView.headerView.priceSort.status.accept(.normal)
         mainView.headerView.changeSort.status.accept(.normal)
         mainView.headerView.accPriceSort.status.accept(.dsc)
         
-        dump(testMockMarketData)
-        print(testMockMarketData[0].price)
-        dump(testMockMarketData[0].volatility)
-        print(testMockMarketData[0].accPrice)
+        output.headerTitle
+            .bind(to: mainView.headerView.titleLabel.rx.text)
+            .disposed(by: disposeBag)
         
-        Observable.just(mockMarketData)
+        output.priceSortStatus
+            .bind(to: mainView.headerView.priceSort.status)
+            .disposed(by: disposeBag)
+        
+        output.changeSortStatus
+            .bind(to: mainView.headerView.changeSort.status)
+            .disposed(by: disposeBag)
+        
+        output.accPriceSortStatus
+            .bind(to: mainView.headerView.accPriceSort.status)
+            .disposed(by: disposeBag)
+        
+        output.tickers
             .bind(
                 to: mainView.tableView.rx.items(
                     cellIdentifier: TickerTableViewCell.id,

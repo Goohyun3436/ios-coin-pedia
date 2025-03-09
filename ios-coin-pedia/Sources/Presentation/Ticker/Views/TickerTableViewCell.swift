@@ -20,7 +20,7 @@ final class TickerTableViewCell: BaseTableViewCell {
     static let id = "TickerTableViewCell"
     
     //MARK: - Setup Method
-    func setData(_ info: MarketData) {
+    func setData(_ info: UBTickerResponse) {
         titleLabel.text = info.title
         priceLabel.text = info.price
         volatilityView.setData(info.volatility)

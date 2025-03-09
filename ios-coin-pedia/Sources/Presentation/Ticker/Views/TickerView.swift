@@ -41,7 +41,6 @@ final class TickerView: BaseView {
     
     override func setupAttributes() {
         tableView.rowHeight = 44
-//        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
     }
     
 }

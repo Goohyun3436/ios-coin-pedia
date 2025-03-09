@@ -14,7 +14,7 @@ final class TickerHeaderView: BaseView {
     let titleLabel = AppLabel(.title3)
     let priceSort = TickerSortButton(.price)
     let changeSort = TickerSortButton(.change)
-    let accPriceSort = TickerSortButton(.acc_price)
+    let accPriceSort = TickerSortButton(.accPrice)
     
     override func setupUI() {
         [titleLabel, priceSort, changeSort, accPriceSort].forEach {

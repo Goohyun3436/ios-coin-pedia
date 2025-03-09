@@ -43,7 +43,7 @@ final class NetworkManager {
                 return disposables
             }
             
-            print(urlRequest)
+//            print(urlRequest)
             
             URLSession.shared.dataTask(with: urlRequest) { data, response, err in
                 
@@ -72,7 +72,10 @@ final class NetworkManager {
                 }
                 
                 do {
-                    let response = try JSONDecoder().decode(responseT.self, from: data)
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    
+                    let response = try decoder.decode(responseT.self, from: data)
                     observer(.success(.success(response)))
                 } catch {
                     print("======data decode======")
