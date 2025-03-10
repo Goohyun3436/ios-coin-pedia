@@ -22,7 +22,7 @@ final class TrendingNftCollectionViewCell: BaseCollectionViewCell {
     static let id = "TrendingNftCollectionViewCell"
     
     //MARK: - Setup Method
-    func setData(_ info: TrendingNFTItem) {
+    func setData(_ info: CGNftInfo) {
         iconImageView.kf.setImage(
             with: URL(string: info.thumb),
             placeholder: UIImage(systemName: info.imagePlaceholder)

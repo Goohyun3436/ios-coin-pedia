@@ -10,8 +10,8 @@ import Foundation
 //MARK: - Response
 //MARK: - Trending
 struct CGTrendingResponse: Decodable {
-    let coins: [CGCoinsInfo]
-    let nfts: [CGNftInfo]
+    var coins: [CGCoinsInfo]
+    var nfts: [CGNftInfo]
 }
 
 struct CGCoinsInfo: Decodable {
@@ -20,18 +20,51 @@ struct CGCoinsInfo: Decodable {
 
 struct CGTrendingCoinInfo: Decodable {
     let id: String
-    let coin_id: Int
+    let coinId: Int
     let name: String
     let symbol: String
     let thumb: String
+    let score: Int
     let data: CGCoinDataInfo
+    
+    let rank: String
+    let imagePlaceholder: String
+    let volatility: VolatilityInfo
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case coinId
+        case name
+        case symbol
+        case thumb
+        case score
+        case data
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        coinId = try container.decode(Int.self, forKey: .coinId)
+        name = try container.decode(String.self, forKey: .name)
+        symbol = try container.decode(String.self, forKey: .symbol)
+        thumb = try container.decode(String.self, forKey: .thumb)
+        score = try container.decode(Int.self, forKey: .score)
+        data = try container.decode(CGCoinDataInfo.self, forKey: .data)
+        
+        rank = "\(score + 1)"
+        imagePlaceholder = AppIcon.questionMark.value
+        volatility = VolatilityInfo(
+            type: .percentage,
+            percentage: data.priceChangePercentage24H.krw
+        )
+    }
 }
 
 struct CGCoinDataInfo: Decodable {
-    let price_change_percentage_24h: CGCoinPriceChangePercentage24h
+    let priceChangePercentage24H: CGCoinPriceChangePercentage24H
 }
 
-struct CGCoinPriceChangePercentage24h: Decodable {
+struct CGCoinPriceChangePercentage24H: Decodable {
     let krw: Double
 }
 
@@ -39,13 +72,38 @@ struct CGNftInfo: Decodable {
     let id: String
     let name: String
     let thumb: String
-    let floor_price_24h_percentage_change: Double
+    let floorPrice24HPercentageChange: Double
     let data: CGNftDataInfo
+    
+    let imagePlaceholder: String
+    let volatility: VolatilityInfo
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case thumb
+        case floorPrice24HPercentageChange
+        case data
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        thumb = try container.decode(String.self, forKey: .thumb)
+        floorPrice24HPercentageChange = try container.decode(Double.self, forKey: .floorPrice24HPercentageChange)
+        data = try container.decode(CGNftDataInfo.self, forKey: .data)
+        
+        imagePlaceholder = AppIcon.questionMark.value
+        volatility = VolatilityInfo(
+            type: .percentage,
+            percentage: floorPrice24HPercentageChange
+        )
+    }
 }
 
 struct CGNftDataInfo: Decodable {
-//    let floor_price_in_usd_24h_percentage_change: String
-    let h24_average_sale_price: String
+    let h24AverageSalePrice: String
 }
 
 //MARK: - Search
@@ -57,7 +115,7 @@ struct CGSearchCoinInfo: Decodable {
     let id: String
     let name: String
     let symbol: String
-    let market_cap_rank: Int
+    let marketCapRank: Int
     let thumb: String
     let score: Int
 }
@@ -68,19 +126,19 @@ struct CGMarketsResponse: Decodable {
     let symbol: String
     let name: String
     let image: String
-    let current_price: Double
-    let price_change_percentage_24h: Double
-    let last_updated: String
-    let high_24h: Double
-    let low_24h: Double
+    let currentPrice: Double
+    let priceChangePercentage24H: Double
+    let lastUpdated: String
+    let high24H: Double
+    let low24H: Double
     let ath: Double
     let ath_date: String
     let atl: Double
-    let atl_date: String
-    let market_cap: Double
-    let fully_diluted_valuation: Double
-    let total_volume: Double
-    let sparkline_in_7d: CGMarketSparkline
+    let atlDate: String
+    let marketCap: Double
+    let fullyDilutedValuation: Double
+    let totalVolume: Double
+    let sparklineIn7D: CGMarketSparkline
 }
 
 struct CGMarketSparkline: Decodable {
@@ -129,8 +187,12 @@ enum CGError: String, APIError {
         }
     }
     
+    var title: String {
+        return "네트워크 에러"
+    }
+    
     var message: String {
-        return "\(self.description) (\(self.rawValue)"
+        return "\(self.description) (\(self.rawValue))"
     }
     
     private var description: String {

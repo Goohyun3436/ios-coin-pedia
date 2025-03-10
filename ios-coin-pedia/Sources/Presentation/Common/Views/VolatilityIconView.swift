@@ -11,6 +11,7 @@ import SnapKit
 final class VolatilityIconView: BaseView {
     
     //MARK: - UI Property
+    private let wrap = UIStackView()
     private let iconView = UIImageView()
     private let label: AppLabel
     
@@ -24,6 +25,8 @@ final class VolatilityIconView: BaseView {
     func setData(_ info: VolatilityInfo) {
         if let icon = info.icon {
             iconView.image = UIImage(systemName: icon.value)
+        } else {
+            iconView.isHidden = true
         }
         label.text = info.text
         iconView.tintColor = info.color.value
@@ -32,24 +35,29 @@ final class VolatilityIconView: BaseView {
     
     override func setupUI() {
         [iconView, label].forEach {
-            addSubview($0)
+            wrap.addArrangedSubview($0)
         }
+        
+        addSubview(wrap)
     }
     
     override func setupConstraints() {
         let margin: CGFloat = 4
         let iconSize: CGFloat = 12
         
+        wrap.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        wrap.axis = .horizontal
+        wrap.spacing = margin
+        
         iconView.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().offset(margin)
             make.size.equalTo(iconSize)
         }
-        
-        label.snp.makeConstraints { make in
-            make.leading.equalTo(iconView.snp.trailing).offset(margin)
-            make.trailing.equalToSuperview().inset(margin)
-        }
+    }
+    
+    override func setupAttributes() {
+        label.textAlignment = .right
     }
     
 }

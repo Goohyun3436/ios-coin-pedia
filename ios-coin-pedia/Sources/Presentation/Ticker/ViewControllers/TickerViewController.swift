@@ -66,6 +66,12 @@ final class TickerViewController: BaseViewController {
                 }
             )
             .disposed(by: disposeBag)
+        
+        output.alert
+            .bind(with: self, onNext: { owner, alert in
+                owner.presentAlert(alert)
+            })
+            .disposed(by: disposeBag)
     }
     
 }

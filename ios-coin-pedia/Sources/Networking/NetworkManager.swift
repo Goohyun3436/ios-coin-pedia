@@ -18,6 +18,7 @@ protocol APIRequest {
 }
 
 protocol APIError: Error {
+    var title: String { get }
     var message: String { get }
     init(statusCode: Int)
 }

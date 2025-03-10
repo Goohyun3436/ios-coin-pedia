@@ -80,8 +80,12 @@ enum UBError: String, APIError {
         }
     }
     
+    var title: String {
+        return "네트워크 에러"
+    }
+    
     var message: String {
-        return "\(self.description) (\(self.rawValue)"
+        return "\(self.description) (\(self.rawValue))"
     }
     
     private var description: String {

@@ -11,7 +11,13 @@ final class DetailViewController: BaseViewController {
     
     //MARK: - Property
     private let mainView = DetailView()
-    private let viewModel = DetailViewModel()
+    private let viewModel: DetailViewModel
+    
+    //MARK: - Initializer Method
+    init(viewModel: DetailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
     
     //MARK: - Override Method
     override func loadView() {

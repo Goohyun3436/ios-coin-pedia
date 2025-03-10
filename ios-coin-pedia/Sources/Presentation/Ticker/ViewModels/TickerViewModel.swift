@@ -27,19 +27,20 @@ final class TickerViewModel: BaseViewModel {
         let changeSortStatus: PublishRelay<TickerSortStatus>
         let accPriceSortStatus: PublishRelay<TickerSortStatus>
         let tickers: PublishRelay<[UBTickerResponse]>
+        let alert: PublishRelay<AlertInfo>
     }
     
     //MARK: - Private
     private struct Private {
         let headerTitle = "코인"
-        let refreshCycle = 5
+        let fetchCycleSec = 5
         let timerTrigger = PublishRelay<Void>()
         let fetchTrigger = PublishRelay<Void>()
         let sort = BehaviorRelay(value: TickerSort.accPrice)
         let sortStatus = BehaviorRelay(value: TickerSortStatus.dsc)
         let tickers = PublishRelay<[UBTickerResponse]>()
+        let networkError = PublishRelay<UBError>()
         var disposeBag = DisposeBag()
-        var testBag = DisposeBag()
     }
     
     //MARK: - Property
@@ -52,6 +53,7 @@ final class TickerViewModel: BaseViewModel {
         let changeSortStatus = PublishRelay<TickerSortStatus>()
         let accPriceSortStatus = PublishRelay<TickerSortStatus>()
         let tickers = PublishRelay<[UBTickerResponse]>()
+        let alert = PublishRelay<AlertInfo>()
         
         var fetchCycle: Disposable?
         
@@ -74,12 +76,14 @@ final class TickerViewModel: BaseViewModel {
                     UBError.self
                 )
             }
+            .observe(on: MainScheduler.instance)
             .bind(with: self, onNext: { owner, response in
                 switch response {
                 case .success(let data):
                     owner.priv.tickers.accept(data)
                 case .failure(let error):
-                    print(error)
+                    fetchCycle?.dispose()
+                    owner.priv.networkError.accept(error)
                 }
             })
             .disposed(by: priv.disposeBag)
@@ -134,12 +138,18 @@ final class TickerViewModel: BaseViewModel {
             })
             .disposed(by: priv.disposeBag)
         
+        priv.networkError
+            .map { AlertInfo(title: $0.title, message: $0.message) }
+            .bind(to: alert)
+            .disposed(by: priv.disposeBag)
+        
         return Output(
             headerTitle: headerTitle,
             priceSortStatus: priceSortStatus,
             changeSortStatus: changeSortStatus,
             accPriceSortStatus: accPriceSortStatus,
-            tickers: tickers
+            tickers: tickers,
+            alert: alert
         )
     }
     
@@ -148,7 +158,7 @@ final class TickerViewModel: BaseViewModel {
             .flatMapLatest({
                 Observable<Int>.timer(
                     .seconds(1),
-                    period: .seconds(self.priv.refreshCycle),
+                    period: .seconds(self.priv.fetchCycleSec),
                     scheduler: MainScheduler.instance
                 )
             })

@@ -21,6 +21,11 @@ final class SearchViewModel: BaseViewModel {
     //MARK: - Property
     private let priv = Private()
     
+    //MARK: - Initializer Method
+    init(query: String) {
+        
+    }
+    
     //MARK: - Transform
     func transform(input: Input) -> Output {
         return Output()

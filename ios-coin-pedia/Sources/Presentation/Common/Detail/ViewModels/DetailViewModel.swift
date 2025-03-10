@@ -21,6 +21,11 @@ final class DetailViewModel: BaseViewModel {
     //MARK: - Property
     private let priv = Private()
     
+    //MARK: - Initializer Method
+    init(coinId: String) {
+        
+    }
+    
     //MARK: - Transform
     func transform(input: Input) -> Output {
         return Output()

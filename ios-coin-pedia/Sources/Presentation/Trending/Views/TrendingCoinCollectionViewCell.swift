@@ -22,7 +22,7 @@ final class TrendingCoinCollectionViewCell: BaseCollectionViewCell {
     static let id = "TrendingCoinCollectionViewCell"
     
     //MARK: - Setup Method
-    func setData(_ info: TrendingCoinItem) {
+    func setData(_ info: CGCoinsInfo) {
         scoreLabel.text = info.item.rank
         iconImageView.kf.setImage(
             with: URL(string: info.item.thumb),
@@ -59,12 +59,14 @@ final class TrendingCoinCollectionViewCell: BaseCollectionViewCell {
             make.top.equalTo(iconImageView.snp.top)
             make.leading.equalTo(iconImageView.snp.trailing).offset(margin)
         }
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         symbolLabel.snp.makeConstraints { make in
             make.top.greaterThanOrEqualTo(nameLabel.snp.bottom).offset(margin)
             make.leading.equalTo(iconImageView.snp.trailing).offset(margin)
             make.bottom.equalTo(iconImageView.snp.bottom)
         }
+        symbolLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         volatilityView.snp.makeConstraints { make in
             make.centerY.trailing.equalToSuperview()

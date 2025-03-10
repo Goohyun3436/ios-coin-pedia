@@ -11,7 +11,13 @@ final class SearchViewController: BaseViewController {
     
     //MARK: - Property
     private let mainView = SearchView()
-    private let viewModel = SearchViewModel()
+    private let viewModel: SearchViewModel
+    
+    //MARK: - Initializer Method
+    init(viewModel: SearchViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
     
     //MARK: - Override Method
     override func loadView() {

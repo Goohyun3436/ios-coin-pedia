@@ -34,6 +34,35 @@ class BaseViewController: UIViewController {
     
 }
 
+//MARK: - Method
+extension BaseViewController {
+    
+    func pushVC(_ vc: BaseViewController) {
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func popVC() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func presentAlert(_ alert: AlertInfo) {
+        let alert = UIAlertController(
+            title: alert.title,
+            message: alert.message,
+            preferredStyle: .alert
+        )
+        
+        let ok = UIAlertAction(title: "확인", style: .default)
+        
+        alert.addAction(ok)
+        
+        alert.overrideUserInterfaceStyle = UIUserInterfaceStyle.dark
+        
+        present(alert, animated: true)
+    }
+    
+}
+
 //MARK: - BaseViewController LifeCycle + RxSwift
 extension Reactive where Base: BaseViewController {
     

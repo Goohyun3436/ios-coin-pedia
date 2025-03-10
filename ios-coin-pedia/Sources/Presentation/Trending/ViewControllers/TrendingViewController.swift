@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxGesture
 
 final class TrendingViewController: BaseViewController {
     
@@ -27,12 +28,46 @@ final class TrendingViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
-        mainView.searchBar.placeholder = "검색어를 입력해주세요."
+        let input = TrendingViewModel.Input(
+            viewWillAppear: rx.viewWillAppear,
+            viewDidDisappear: rx.viewDidDisappear,
+            mainViewTapNSwipeDown: mainView.rx.anyGesture(
+                .tap(configuration: { rec, _ in rec.cancelsTouchesInView = false }),
+                .swipe(direction: .down)
+            ),
+            searchText: mainView.searchBar.rx.text,
+            searchTap: mainView.searchBar.rx.searchButtonClicked,
+            coinTap: mainView.coinCollectionView.rx.modelSelected(CGCoinsInfo.self)
+        )
+        let output = viewModel.transform(input: input)
         
-        mainView.coinHeader.titleLabel.text = "인기 검색어"
-        mainView.coinHeader.detailLabel.text = "02.16 00:30 기준"
+        output.searchBarPlaceholder
+            .bind(to: mainView.searchBar.rx.placeholder)
+            .disposed(by: disposeBag)
         
-        Observable.just(mockTrendingCoins)
+        output.coinHeaderTitle
+            .bind(to: mainView.coinHeader.titleLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.nftHeaderTitle
+            .bind(to: mainView.nftHeader.titleLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.dismissKeyboard
+            .bind(with: self, onNext: { owner, _ in
+                owner.view.endEditing(true)
+            })
+            .disposed(by: disposeBag)
+        
+        output.searchText
+            .bind(to: mainView.searchBar.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.fetchedDatetime
+            .bind(to: mainView.coinHeader.detailLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.coins
             .bind(
                 to: mainView.coinCollectionView.rx.items(
                     cellIdentifier: TrendingCoinCollectionViewCell.id,
@@ -44,9 +79,7 @@ final class TrendingViewController: BaseViewController {
             )
             .disposed(by: disposeBag)
         
-        mainView.nftHeader.titleLabel.text = "인기 NFT"
-        
-        Observable.just(mockTrendingNFTs)
+        output.nfts
             .bind(
                 to: mainView.nftCollectionView.rx.items(
                     cellIdentifier: TrendingNftCollectionViewCell.id,
@@ -56,6 +89,18 @@ final class TrendingViewController: BaseViewController {
                     cell.setData(element)
                 }
             )
+            .disposed(by: disposeBag)
+        
+        output.alert
+            .bind(with: self, onNext: { owner, alert in
+                owner.presentAlert(alert)
+            })
+            .disposed(by: disposeBag)
+        
+        output.pushVC
+            .bind(with: self, onNext: { owner, vc in
+                owner.pushVC(vc)
+            })
             .disposed(by: disposeBag)
     }
     
