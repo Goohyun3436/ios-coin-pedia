@@ -118,6 +118,10 @@ struct CGSearchCoinInfo: Decodable {
     let marketCapRank: Int
     let thumb: String
     let score: Int
+    
+    let imagePlaceholder: String
+    let rank: String
+    let favorite: Bool
 }
 
 //MARK: - Markets

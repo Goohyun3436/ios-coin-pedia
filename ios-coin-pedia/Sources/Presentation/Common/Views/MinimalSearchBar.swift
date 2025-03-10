@@ -11,7 +11,10 @@ final class MinimalSearchBar: UISearchBar {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.searchTextField.leftViewMode = .never
+        searchTextField.leftViewMode = .never
+        searchTextField.clearButtonMode = .never
+        setPositionAdjustment(UIOffset(horizontal: -20, vertical: 0), for: .search)
+        searchTextField.font = AppFont.title4.value
     }
     
     required init?(coder: NSCoder) {
