@@ -1,5 +1,5 @@
 //
-//  TickerModel.swift
+//  UpbitModel.swift
 //  ios-coin-pedia
 //
 //  Created by Goo on 3/8/25.

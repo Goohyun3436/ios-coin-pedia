@@ -40,7 +40,6 @@ enum CGRequest: APIRequest {
                 .map { $0.rawValue }
                 .joined(separator: ",")
             let ids = ids.joined(separator: ",")
-            print(">>", sparkline.description)
             return [
                 "vs_currency": currencies,
                 "ids": ids,

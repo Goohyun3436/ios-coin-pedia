@@ -34,17 +34,46 @@ final class SearchViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
+        let input = SearchViewModel.Input(
+            screenWidth: UIScreen.main.bounds.width,
+            searchTap: mainView.searchBar.rx.searchButtonClicked,
+            searchText: mainView.searchBar.rx.text,
+            segmentTap: mainView.segmentControl.rx.selectedSegmentIndex,
+            segmentSwipe: mainView.scrollView.rx.didEndDecelerating,
+            scrollOffset: mainView.scrollView.rx.contentOffset,
+            coinTap: mainView.coinCollectionView.rx.modelSelected(CGSearchCoinInfo.self)
+        )
+        let output = viewModel.transform(input: input)
         
-        mainView.searchBar.placeholder = "검색어를 입력해주세요."
-        mainView.searchBar.text = "Bitcoin"
-        mainView.segmentControl.setSegment(titles: ["코인", "NFT", "거래소"])
-        mainView.segmentControl.selectedSegmentIndex = 0
+        output.searchBarPlaceholder
+            .bind(to: mainView.searchBar.rx.placeholder)
+            .disposed(by: disposeBag)
         
-        mainView.segmentControl.rx.selectedSegmentIndex
+        output.segmentTitles
+            .bind(with: self, onNext: { owner, titles in
+                owner.mainView.segmentControl.setSegment(titles: titles)
+            })
+            .disposed(by: disposeBag)
+        
+        output.dismissKeyboard
+            .bind(with: self, onNext: { owner, _ in
+                owner.navigationItem.titleView?.endEditing(true)
+            })
+            .disposed(by: disposeBag)
+        
+        output.selectedSegmentIndex
             .bind(to: mainView.segmentControl.rx.selectedSegmentIndex)
             .disposed(by: disposeBag)
         
-        Observable.just(mockSearchCoin)
+        output.scrollOffset
+            .bind(to: mainView.scrollView.rx.contentOffset)
+            .disposed(by: disposeBag)
+        
+        output.searchText
+            .bind(to: mainView.searchBar.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.coins
             .bind(
                 to: mainView.coinCollectionView.rx.items(
                     cellIdentifier: SearchCollectionViewCell.id,
@@ -54,6 +83,18 @@ final class SearchViewController: BaseViewController {
                     cell.setData(element)
                 }
             )
+            .disposed(by: disposeBag)
+        
+        output.alert
+            .bind(with: self, onNext: { owner, alert in
+                owner.presentAlert(alert)
+            })
+            .disposed(by: disposeBag)
+        
+        output.pushVC
+            .bind(with: self, onNext: { owner, vc in
+                owner.pushVC(vc)
+            })
             .disposed(by: disposeBag)
     }
     

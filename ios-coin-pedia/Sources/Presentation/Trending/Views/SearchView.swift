@@ -13,7 +13,7 @@ final class SearchView: BaseView {
     //MARK: - UI Property
     let searchBar = MinimalSearchBar()
     let segmentControl = BorderBottomSegmentControl()
-    private let scrollView = UIScrollView()
+    let scrollView = UIScrollView()
     private let stackView = UIStackView()
     let coinCollectionView = SearchCollectionView(
         itemSize: AppImageSize.small,
@@ -25,7 +25,7 @@ final class SearchView: BaseView {
         insetV: 16,
         insetH: 16
     )
-    let categoryCollectionView = SearchCollectionView(
+    let exchangeCollectionView = SearchCollectionView(
         itemSize: AppImageSize.small,
         insetV: 16,
         insetH: 16
@@ -40,7 +40,7 @@ final class SearchView: BaseView {
         let collectionViewWidth: CGFloat = UIScreen.main.bounds.width
         let collectionViewHeight: CGFloat = safeAreaHeight - segmentHeight
         
-        [coinCollectionView, nftCollectionView, categoryCollectionView].forEach {
+        [coinCollectionView, nftCollectionView, exchangeCollectionView].forEach {
             $0.snp.makeConstraints { make in
                 make.width.equalTo(collectionViewWidth)
                 make.height.equalTo(collectionViewHeight)
@@ -50,7 +50,7 @@ final class SearchView: BaseView {
     
     //MARK: - Setup Method
     override func setupUI() {
-        [coinCollectionView, nftCollectionView, categoryCollectionView].forEach {
+        [coinCollectionView, nftCollectionView, exchangeCollectionView].forEach {
             stackView.addArrangedSubview($0)
         }
         
@@ -87,6 +87,10 @@ final class SearchView: BaseView {
         scrollView.alwaysBounceVertical = false
         scrollView.bounces = false
         scrollView.showsHorizontalScrollIndicator = false
+        
+        [coinCollectionView, nftCollectionView, exchangeCollectionView].forEach {
+            $0.keyboardDismissMode = .onDrag
+        }
     }
     
 }

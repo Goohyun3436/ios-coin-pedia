@@ -117,11 +117,32 @@ struct CGSearchCoinInfo: Decodable {
     let symbol: String
     let marketCapRank: Int
     let thumb: String
-    let score: Int
     
     let imagePlaceholder: String
     let rank: String
     let favorite: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case symbol
+        case marketCapRank
+        case thumb
+        case score
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        symbol = try container.decode(String.self, forKey: .symbol)
+        marketCapRank = try container.decodeIfPresent(Int.self, forKey: .marketCapRank) ?? 0
+        thumb = try container.decode(String.self, forKey: .thumb)
+        
+        imagePlaceholder = AppIcon.questionMark.value
+        rank = "#\(marketCapRank)"
+        favorite = true
+    }
 }
 
 //MARK: - Markets

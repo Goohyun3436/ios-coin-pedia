@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: scene)
         
 //        window?.rootViewController = TabBarController()
-        window?.rootViewController = UINavigationController(rootViewController: SearchViewController(viewModel: SearchViewModel(query: "")))
+        window?.rootViewController = UINavigationController(rootViewController: SearchViewController(viewModel: SearchViewModel(query: "Bitcoin")))
         
         window?.makeKeyAndVisible()
     }

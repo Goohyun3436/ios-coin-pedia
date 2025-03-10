@@ -22,8 +22,7 @@ final class SearchCollectionViewCell: BaseCollectionViewCell {
     static let id = "SearchCollectionViewCell"
     
     //MARK: - Setup Method
-//    func setData(_ info: CGSearchCoinInfo) {
-    func setData(_ info: SearchCoin) {
+    func setData(_ info: CGSearchCoinInfo) {
         iconImageView.kf.setImage(
             with: URL(string: info.thumb),
             placeholder: UIImage(systemName: info.imagePlaceholder)
