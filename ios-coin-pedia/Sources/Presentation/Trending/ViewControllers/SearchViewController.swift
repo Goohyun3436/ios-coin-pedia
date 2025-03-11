@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 final class SearchViewController: BaseViewController {
     
@@ -78,8 +79,27 @@ final class SearchViewController: BaseViewController {
                     cellIdentifier: SearchCollectionViewCell.id,
                     cellType: SearchCollectionViewCell.self
                 ),
-                curriedArgument: { item, element, cell in
+                curriedArgument: { [unowned self] item, element, cell in
                     cell.setData(element)
+                    
+                    cell.favoriteButton.rx.tap
+                        .bind(with: self, onNext: { owner, _ in
+                            cell.favoriteButton.isSelected.toggle()
+                            
+                            switch cell.favoriteButton.isSelected {
+                            case true:
+                                UserStorage.shared.addFavorite(
+                                    coin: CoinThumbnail(
+                                        id: element.id,
+                                        name: element.name,
+                                        thumb: element.thumb
+                                    )
+                                )
+                            case false:
+                                UserStorage.shared.deleteFavorite(coinId: element.id)
+                            }
+                        })
+                        .disposed(by: cell.disposeBag)
                 }
             )
             .disposed(by: disposeBag)
