@@ -95,6 +95,12 @@ final class DetailViewController: BaseViewController {
                 owner.mainView.analyzeView.totalVolume.setData(info.totalVolume)
             })
             .disposed(by: disposeBag)
+        
+        output.alert
+            .bind(with: self, onNext: { owner, alert in
+                owner.presentAlert(alert)
+            })
+            .disposed(by: disposeBag)
     }
     
 }

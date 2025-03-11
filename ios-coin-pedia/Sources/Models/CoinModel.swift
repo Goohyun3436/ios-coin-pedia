@@ -47,7 +47,14 @@ struct CoinPriceInfo {
     var priceKRW: String {
         return "₩\(price.formatted())"
     }
-    let date: String = ""
+    var date: String = " "
+    var dateKR: String {
+        return DateManager.shared.convertFormat(
+            with: date,
+            from: "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+            to: "yy년 M월 d일"
+        )
+    }
 }
 
 //MARK: - Volatility

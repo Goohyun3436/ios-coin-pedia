@@ -27,6 +27,7 @@ final class DetailViewModel: BaseViewModel {
         let info: PublishRelay<CoinInfo>
         let analyzeHeaderTitle: Observable<String>
         let analyze: PublishRelay<CoinAnalyze>
+        let alert: PublishRelay<AlertInfo>
     }
     
     //MARK: - Private
@@ -35,6 +36,7 @@ final class DetailViewModel: BaseViewModel {
         let analyzeHeaderTitle = "투자지표"
         let coin: CoinThumbnail
         let coinInfo = PublishRelay<CGMarketsResponse>()
+        let networkError = PublishRelay<CGError>()
         let disposeBag = DisposeBag()
     }
     
@@ -59,6 +61,7 @@ final class DetailViewModel: BaseViewModel {
         let info = PublishRelay<CoinInfo>()
         let analyzeHeaderTitle = Observable.just(priv.analyzeHeaderTitle)
         let analyze = PublishRelay<CoinAnalyze>()
+        let alert = PublishRelay<AlertInfo>()
         
         Observable.just(priv.coin.id)
             .debug("fetch")
@@ -73,13 +76,10 @@ final class DetailViewModel: BaseViewModel {
             .bind(with: self, onNext: { owner, response in
                 switch response {
                 case .success(let data):
-                    guard let coin = data.first else {
-                        // error
-                        return
-                    }
+                    guard let coin = data.first else { return }
                     owner.priv.coinInfo.accept(coin)
                 case .failure(let error):
-                    print(error)
+                    owner.priv.networkError.accept(error)
                 }
             })
             .disposed(by: priv.disposeBag)
@@ -95,6 +95,11 @@ final class DetailViewModel: BaseViewModel {
             })
             .disposed(by: priv.disposeBag)
         
+        priv.networkError
+            .map { AlertInfo(title: $0.title, message: $0.message) }
+            .bind(to: alert)
+            .disposed(by: priv.disposeBag)
+        
         return Output(
             coinIconImage: coinIconImage,
             coinName: coinName,
@@ -106,7 +111,8 @@ final class DetailViewModel: BaseViewModel {
             infoHeaderTitle: infoHeaderTitle,
             info: info,
             analyzeHeaderTitle: analyzeHeaderTitle,
-            analyze: analyze
+            analyze: analyze,
+            alert: alert
         )
     }
     

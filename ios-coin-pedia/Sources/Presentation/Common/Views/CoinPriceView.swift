@@ -15,16 +15,11 @@ final class CoinPriceView: BaseView {
     private let priceLabel = AppLabel(.text1)
     private let subLabel = AppLabel(.subText3, .lightNavy)
     
-    init() {
-        super.init(frame: .zero)
-        subLabel.text = " "
-    }
-    
     //MARK: - Setup Method
     func setData(_ info: CoinPriceInfo) {
         titleLabel.text = info.title
         priceLabel.text = info.priceKRW
-        subLabel.text = info.date
+        subLabel.text = info.dateKR
     }
     
     override func setupUI() {

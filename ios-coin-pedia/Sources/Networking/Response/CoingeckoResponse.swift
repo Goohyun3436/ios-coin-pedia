@@ -242,8 +242,8 @@ struct CGMarketsResponse: Decodable {
         info = CoinInfo(
             high24H: CoinPriceInfo(title: "24시간 고가", price: high24H),
             low24H: CoinPriceInfo(title: "24시간 저가", price: low24H),
-            ath: CoinPriceInfo(title: "역대 최고가", price: ath),
-            atl: CoinPriceInfo(title: "역대 최저가", price: atl)
+            ath: CoinPriceInfo(title: "역대 최고가", price: ath, date: athDate),
+            atl: CoinPriceInfo(title: "역대 최저가", price: atl, date: atlDate)
         )
         
         analyze = CoinAnalyze(
