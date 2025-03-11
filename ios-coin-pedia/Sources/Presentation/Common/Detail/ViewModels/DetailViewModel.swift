@@ -24,7 +24,9 @@ final class DetailViewModel: BaseViewModel {
         let chartInfo: PublishRelay<CoinChartInfo>
         let updateTime: PublishRelay<String>
         let infoHeaderTitle: Observable<String>
+        let info: PublishRelay<CoinInfo>
         let analyzeHeaderTitle: Observable<String>
+        let analyze: PublishRelay<CoinAnalyze>
     }
     
     //MARK: - Private
@@ -54,7 +56,9 @@ final class DetailViewModel: BaseViewModel {
         let chartInfo = PublishRelay<CoinChartInfo>()
         let updateTime = PublishRelay<String>()
         let infoHeaderTitle = Observable.just(priv.infoHeaderTitle)
+        let info = PublishRelay<CoinInfo>()
         let analyzeHeaderTitle = Observable.just(priv.analyzeHeaderTitle)
+        let analyze = PublishRelay<CoinAnalyze>()
         
         Observable.just(priv.coin.id)
             .debug("fetch")
@@ -86,6 +90,8 @@ final class DetailViewModel: BaseViewModel {
                 volatility.accept(coin.volatility)
                 chartInfo.accept(coin.chartInfo)
                 updateTime.accept(coin.lastUpdatedStr)
+                info.accept(coin.info)
+                analyze.accept(coin.analyze)
             })
             .disposed(by: priv.disposeBag)
         
@@ -98,7 +104,9 @@ final class DetailViewModel: BaseViewModel {
             chartInfo: chartInfo,
             updateTime: updateTime,
             infoHeaderTitle: infoHeaderTitle,
-            analyzeHeaderTitle: analyzeHeaderTitle
+            info: info,
+            analyzeHeaderTitle: analyzeHeaderTitle,
+            analyze: analyze
         )
     }
     

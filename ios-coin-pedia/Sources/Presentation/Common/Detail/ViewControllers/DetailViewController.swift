@@ -75,27 +75,26 @@ final class DetailViewController: BaseViewController {
             .bind(to: mainView.infoHeader.titleLabel.rx.text)
             .disposed(by: disposeBag)
         
-        mainView.infoView.high24H.titleLabel.text = "24시간 고가"
-        mainView.infoView.high24H.priceLabel.text = "₩140,375,094"
-        mainView.infoView.low24H.titleLabel.text = "24시간 저가"
-        mainView.infoView.low24H.priceLabel.text = "₩140,375,094"
-        mainView.infoView.ath.titleLabel.text = "역대 최고가"
-        mainView.infoView.ath.priceLabel.text = "₩140,375,094"
-        mainView.infoView.ath.subLabel.text = "25년 1월 20일"
-        mainView.infoView.atl.titleLabel.text = "역대 최저가"
-        mainView.infoView.atl.priceLabel.text = "₩140,375,094"
-        mainView.infoView.atl.subLabel.text = "25년 1월 20일"
+        output.info
+            .bind(with: self, onNext: { owner, info in
+                owner.mainView.infoView.high24H.setData(info.high24H)
+                owner.mainView.infoView.low24H.setData(info.low24H)
+                owner.mainView.infoView.ath.setData(info.ath)
+                owner.mainView.infoView.atl.setData(info.atl)
+            })
+            .disposed(by: disposeBag)
         
         output.analyzeHeaderTitle
             .bind(to: mainView.analyzeHeader.titleLabel.rx.text)
             .disposed(by: disposeBag)
         
-        mainView.analyzeView.marketCap.titleLabel.text = "시가총액"
-        mainView.analyzeView.marketCap.priceLabel.text = "₩140,375,094,534,545,345,456"
-        mainView.analyzeView.fdv.titleLabel.text = "완전 희석 가치(FDV)"
-        mainView.analyzeView.fdv.priceLabel.text = "₩140,375,094,534,545,345,456"
-        mainView.analyzeView.totalVolume.titleLabel.text = "총 거래량"
-        mainView.analyzeView.totalVolume.priceLabel.text = "₩140,375,094,534,545,345,456"
+        output.analyze
+            .bind(with: self, onNext: { owner, info in
+                owner.mainView.analyzeView.marketCap.setData(info.marketCap)
+                owner.mainView.analyzeView.fdv.setData(info.fdv)
+                owner.mainView.analyzeView.totalVolume.setData(info.totalVolume)
+            })
+            .disposed(by: disposeBag)
     }
     
 }

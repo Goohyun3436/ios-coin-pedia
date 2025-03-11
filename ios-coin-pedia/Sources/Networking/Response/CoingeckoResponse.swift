@@ -170,6 +170,8 @@ struct CGMarketsResponse: Decodable {
     let volatility: VolatilityInfo
     let chartInfo: CoinChartInfo
     let lastUpdatedStr: String
+    let info: CoinInfo
+    let analyze: CoinAnalyze
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -235,6 +237,19 @@ struct CGMarketsResponse: Decodable {
             with: lastUpdated,
             from: "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
             to: "M/d HH:mm:ss 업데이트"
+        )
+        
+        info = CoinInfo(
+            high24H: CoinPriceInfo(title: "24시간 고가", price: high24H),
+            low24H: CoinPriceInfo(title: "24시간 저가", price: low24H),
+            ath: CoinPriceInfo(title: "역대 최고가", price: ath),
+            atl: CoinPriceInfo(title: "역대 최저가", price: atl)
+        )
+        
+        analyze = CoinAnalyze(
+            marketCap: CoinPriceInfo(title: "시가총액", price: marketCap),
+            fdv: CoinPriceInfo(title: "완전 희석 가치(FDV)", price: fullyDilutedValuation),
+            totalVolume: CoinPriceInfo(title: "총 거래량", price: totalVolume)
         )
     }
 }

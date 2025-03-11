@@ -28,6 +28,28 @@ struct CoinChartData: Identifiable {
     let price: Double
 }
 
+struct CoinInfo {
+    let high24H: CoinPriceInfo
+    let low24H: CoinPriceInfo
+    let ath: CoinPriceInfo
+    let atl: CoinPriceInfo
+}
+
+struct CoinAnalyze {
+    let marketCap: CoinPriceInfo
+    let fdv: CoinPriceInfo
+    let totalVolume: CoinPriceInfo
+}
+
+struct CoinPriceInfo {
+    let title: String
+    let price: Double
+    var priceKRW: String {
+        return "₩\(price.formatted())"
+    }
+    let date: String = ""
+}
+
 //MARK: - Volatility
 enum VolatilityType {
     case percentage
