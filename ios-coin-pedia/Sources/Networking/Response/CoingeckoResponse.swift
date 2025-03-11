@@ -152,20 +152,91 @@ struct CGMarketsResponse: Decodable {
     let id: String
     let symbol: String
     let name: String
-    let image: String
     let currentPrice: Double
     let priceChangePercentage24H: Double
     let lastUpdated: String
     let high24H: Double
     let low24H: Double
     let ath: Double
-    let ath_date: String
+    let athDate: String
     let atl: Double
     let atlDate: String
     let marketCap: Double
     let fullyDilutedValuation: Double
     let totalVolume: Double
     let sparklineIn7D: CGMarketSparkline
+    
+    let currentPriceStr: String
+    let volatility: VolatilityInfo
+    let chartInfo: CoinChartInfo
+    let lastUpdatedStr: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case symbol
+        case name
+        case currentPrice
+        case priceChangePercentage24H
+        case lastUpdated
+        case high24H
+        case low24H
+        case ath
+        case athDate
+        case atl
+        case atlDate
+        case marketCap
+        case fullyDilutedValuation
+        case totalVolume
+        case sparklineIn7D
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        symbol = try container.decode(String.self, forKey: .symbol)
+        name = try container.decode(String.self, forKey: .name)
+        currentPrice = try container.decode(Double.self, forKey: .currentPrice)
+        priceChangePercentage24H = try container.decode(Double.self, forKey: .priceChangePercentage24H)
+        lastUpdated = try container.decode(String.self, forKey: .lastUpdated)
+        high24H = try container.decode(Double.self, forKey: .high24H)
+        low24H = try container.decode(Double.self, forKey: .low24H)
+        ath = try container.decode(Double.self, forKey: .ath)
+        athDate = try container.decode(String.self, forKey: .athDate)
+        atl = try container.decode(Double.self, forKey: .atl)
+        atlDate = try container.decode(String.self, forKey: .atlDate)
+        marketCap = try container.decode(Double.self, forKey: .marketCap)
+        fullyDilutedValuation = try container.decode(Double.self, forKey: .fullyDilutedValuation)
+        totalVolume = try container.decode(Double.self, forKey: .totalVolume)
+        sparklineIn7D = try container.decode(CGMarketSparkline.self, forKey: .sparklineIn7D)
+        
+        currentPriceStr = "₩\(currentPrice.formatted())"
+        
+        volatility = VolatilityInfo(
+            type: .percentage,
+            percentage: priceChangePercentage24H
+        )
+        
+        let prices = sparklineIn7D.price
+        let startDate = Date().addingTimeInterval(-Double(prices.count) * 3600)
+        let chartData = prices.enumerated().map {
+            CoinChartData(
+                time: startDate.addingTimeInterval(Double($0) * 3600),
+                price: $1
+            )
+        }
+        var chartInfo_ = CoinChartInfo(data: chartData)
+        if let yMin = prices.min(), let yMax = prices.max() {
+            chartInfo_.yMin = yMin * 0.98
+            chartInfo_.yMax = yMax
+        }
+        chartInfo = chartInfo_
+        
+        lastUpdatedStr = DateManager.shared.convertFormat(
+            with: lastUpdated,
+            from: "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+            to: "M/d HH:mm:ss 업데이트"
+        )
+    }
 }
 
 struct CGMarketSparkline: Decodable {

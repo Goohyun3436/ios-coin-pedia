@@ -8,22 +8,16 @@
 import SwiftUI
 import Charts
 
-struct ChartData: Identifiable {
-    let id = UUID()
-    let time: Date
-    let price: Double
-}
-
 struct PriceChartView: View {
     @State private var yMin: Double = 0
     @State private var yMax: Double = 0
-    let data: [ChartData]
+    let data: [CoinChartData]
     
     init() {
         let prices = mockCoinDetail.sparklineIn7d.price
         let startDate = Date().addingTimeInterval(-Double(prices.count) * 3600)
         data = prices.enumerated().map {
-            ChartData(
+            CoinChartData(
                 time: startDate.addingTimeInterval(Double($0) * 3600),
                 price: $1
             )

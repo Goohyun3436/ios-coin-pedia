@@ -16,6 +16,18 @@ struct CoinThumbnail {
     var isFavorite: Bool = false
 }
 
+struct CoinChartInfo {
+    let data: [CoinChartData]
+    var yMin: Double = 0
+    var yMax: Double = 0
+}
+
+struct CoinChartData: Identifiable {
+    let id = UUID()
+    let time: Date
+    let price: Double
+}
+
 //MARK: - Volatility
 enum VolatilityType {
     case percentage

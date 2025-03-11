@@ -104,7 +104,11 @@ final class TrendingViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         fetchTrigger
-            .map { self.getCurrentTime() }
+            .map {
+                DateManager.shared.getCurrentTimeTenMin(
+                    dateFormat: self.priv.fetchedDatetimeFormat
+                )
+            }
             .bind(to: fetchedDatetime)
             .disposed(by: priv.disposeBag)
         

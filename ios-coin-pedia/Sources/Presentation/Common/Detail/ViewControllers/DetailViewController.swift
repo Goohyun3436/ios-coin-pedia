@@ -35,6 +35,7 @@ final class DetailViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
+        print(#function)
         let input = DetailViewModel.Input()
         let output = viewModel.transform(input: input)
         
@@ -50,11 +51,19 @@ final class DetailViewController: BaseViewController {
             .bind(to: mainView.favoriteButton.rx.isSelected)
             .disposed(by: disposeBag)
         
-        mainView.priceLabel.text = "₩140,375,094"
+        output.currentPrice
+            .bind(to: mainView.priceLabel.rx.text)
+            .disposed(by: disposeBag)
         
-        mainView.volatilityView.setData(VolatilityInfo(type: .percentage, percentage: 88.88))
+        output.volatility
+            .bind(with: self, onNext: { owner, volatility in
+                owner.mainView.volatilityView.setData(volatility)
+            })
+            .disposed(by: disposeBag)
         
-        mainView.updateTimeLabel.text = "2/15 18:00:45 업데이트"
+        output.updateTime
+            .bind(to: mainView.updateTimeLabel.rx.text)
+            .disposed(by: disposeBag)
         
         mainView.infoHeader.titleLabel.text = "종목정보"
         
