@@ -70,6 +70,7 @@ final class TrendingViewModel: BaseViewModel {
         
         var fetchCycle: Disposable?
         let fetchTrigger = priv.fetchTrigger.share(replay: 1)
+        let searchTap = input.searchTap.share(replay: 1)
         
         input.viewWillAppear
             .map { fetchCycle = self.makeFetchCycle() }
@@ -118,7 +119,11 @@ final class TrendingViewModel: BaseViewModel {
             .bind(to: dismissKeyboard)
             .disposed(by: priv.disposeBag)
         
-        input.searchTap
+        searchTap
+            .bind(to: dismissKeyboard)
+            .disposed(by: priv.disposeBag)
+        
+        searchTap
             .withLatestFrom(input.searchText.orEmpty)
             .flatMap { SearchError.validation($0) }
             .bind(with: self) { owner, result in
