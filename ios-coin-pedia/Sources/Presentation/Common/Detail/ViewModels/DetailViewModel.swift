@@ -37,6 +37,7 @@ final class DetailViewModel: BaseViewModel {
         let infoHeaderTitle = "종목정보"
         let analyzeHeaderTitle = "투자지표"
         let coin: BehaviorRelay<CoinThumbnail>
+        let favoriteHandler: ((Bool) -> ())?
         let coinInfo = PublishRelay<CGMarketsResponse>()
         let networkError = PublishRelay<CGError>()
         let disposeBag = DisposeBag()
@@ -46,8 +47,14 @@ final class DetailViewModel: BaseViewModel {
     private let priv: Private
     
     //MARK: - Initializer Method
-    init(coin: CoinThumbnail) {
-        priv = Private(coin: BehaviorRelay(value: coin))
+    init(
+        coin: CoinThumbnail,
+        favoriteHandler: ((Bool) -> ())? = nil
+    ) {
+        priv = Private(
+            coin: BehaviorRelay(value: coin),
+            favoriteHandler: favoriteHandler
+        )
     }
     
     //MARK: - Transform
@@ -66,7 +73,6 @@ final class DetailViewModel: BaseViewModel {
         let alert = PublishRelay<AlertInfo>()
         
         priv.coin
-            .debug("fetch")
             .flatMapLatest {
                 NetworkManager.shared.request(
                     CGRequest.markets([.krw], [$0.id]),
@@ -98,7 +104,6 @@ final class DetailViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         input.favoriteTap
-            .debug("favoriteTap")
             .withLatestFrom(priv.coin)
             .map {
                 let isFavorite = UserStaticStorage.favoriteIds.contains($0.id)
@@ -111,6 +116,10 @@ final class DetailViewModel: BaseViewModel {
                 }
                 
                 return !isFavorite
+            }
+            .map {
+                self.priv.favoriteHandler?($0)
+                return $0
             }
             .bind(to: isFavorite)
             .disposed(by: priv.disposeBag)

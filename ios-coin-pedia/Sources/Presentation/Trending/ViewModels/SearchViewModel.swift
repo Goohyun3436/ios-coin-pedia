@@ -30,7 +30,7 @@ final class SearchViewModel: BaseViewModel {
         let selectedSegmentIndex: BehaviorRelay<Int>
         let scrollOffset: PublishRelay<CGPoint>
         let searchText: BehaviorRelay<String>
-        let coins: PublishRelay<[CGSearchCoinInfo]>
+        let coins: BehaviorRelay<[CGSearchCoinInfo]>
         let alert: PublishRelay<AlertInfo>
         let pushVC: PublishRelay<BaseViewController>
     }
@@ -63,7 +63,7 @@ final class SearchViewModel: BaseViewModel {
         let dismissKeyboard = PublishRelay<Void>()
         let selectedSegmentIndex = BehaviorRelay(value: priv.initialSelectedSegmentIndex)
         let scrollOffset = PublishRelay<CGPoint>()
-        let coins = PublishRelay<[CGSearchCoinInfo]>()
+        let coins = BehaviorRelay(value: [CGSearchCoinInfo]())
         let alert = PublishRelay<AlertInfo>()
         let pushVC = PublishRelay<BaseViewController>()
         
@@ -136,15 +136,19 @@ final class SearchViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         input.coinTap
-            .map {
+            .map { coin in
                 DetailViewController(
                     viewModel: DetailViewModel(
                         coin: CoinThumbnail(
-                            id: $0.id,
-                            name: $0.name,
-                            thumb: $0.thumb,
-                            isFavorite: $0.isFavorite
-                        )
+                            id: coin.id,
+                            name: coin.name,
+                            thumb: coin.thumb,
+                            isFavorite: coin.isFavorite
+                        ),
+                        favoriteHandler: { isFavorite in
+                            let coins_ = self.syncCoin(coins.value, coin, isFavorite)
+                            coins.accept(coins_)
+                        }
                     )
                 )
             }
@@ -189,6 +193,20 @@ final class SearchViewModel: BaseViewModel {
         var currentOffset = CGPoint(x: 0, y: 0)
         currentOffset.x = pageWidth * CGFloat(page)
         return currentOffset
+    }
+    
+    private func syncCoin(
+        _ currentCoins: [CGSearchCoinInfo],
+        _ targetCoin: CGSearchCoinInfo,
+        _ isFavorite: Bool
+    ) -> [CGSearchCoinInfo] {
+        var result = currentCoins
+        
+        if let index = currentCoins.firstIndex(where: { $0.id == targetCoin.id }) {
+            result[index].isFavorite = isFavorite
+        }
+        
+        return result
     }
     
 }

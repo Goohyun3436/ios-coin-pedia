@@ -122,7 +122,7 @@ struct CGSearchCoinInfo: Decodable {
     
     let imagePlaceholder: String
     let rank: String
-    let isFavorite: Bool
+    var isFavorite: Bool
     
     enum CodingKeys: String, CodingKey {
         case id

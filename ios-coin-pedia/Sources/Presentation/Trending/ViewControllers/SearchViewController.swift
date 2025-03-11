@@ -84,10 +84,12 @@ final class SearchViewController: BaseViewController {
                     
                     cell.favoriteButton.rx.tap
                         .bind(with: self, onNext: { owner, _ in
-                            cell.favoriteButton.isSelected.toggle()
+                            let isFavorite = cell.favoriteButton.isSelected
                             
-                            switch cell.favoriteButton.isSelected {
+                            switch isFavorite {
                             case true:
+                                UserStorage.shared.deleteFavorite(coinId: element.id)
+                            case false:
                                 UserStorage.shared.addFavorite(
                                     coin: CoinThumbnail(
                                         id: element.id,
@@ -95,9 +97,10 @@ final class SearchViewController: BaseViewController {
                                         thumb: element.thumb
                                     )
                                 )
-                            case false:
-                                UserStorage.shared.deleteFavorite(coinId: element.id)
                             }
+                            
+                            let coins_ = owner.syncCoin(output.coins.value, element, !isFavorite)
+                            output.coins.accept(coins_)
                         })
                         .disposed(by: cell.disposeBag)
                 }
@@ -115,6 +118,20 @@ final class SearchViewController: BaseViewController {
                 owner.pushVC(vc)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func syncCoin(
+        _ currentCoins: [CGSearchCoinInfo],
+        _ targetCoin: CGSearchCoinInfo,
+        _ isFavorite: Bool
+    ) -> [CGSearchCoinInfo] {
+        var result = currentCoins
+        
+        if let index = currentCoins.firstIndex(where: { $0.id == targetCoin.id }) {
+            result[index].isFavorite = isFavorite
+        }
+        
+        return result
     }
     
 }

@@ -21,7 +21,12 @@ final class SearchCollectionViewCell: BaseCollectionViewCell {
     
     //MARK: - Property
     static let id = "SearchCollectionViewCell"
-    let disposeBag = DisposeBag()
+    var disposeBag = DisposeBag()
+    
+    //MARK: - Override Method
+    override func prepareForReuse() {
+        self.disposeBag = DisposeBag()
+    }
     
     //MARK: - Setup Method
     func setData(_ info: CGSearchCoinInfo) {
