@@ -12,7 +12,9 @@ import RxCocoa
 final class DetailViewModel: BaseViewModel {
     
     //MARK: - Input
-    struct Input {}
+    struct Input {
+        let favoriteTap: ControlEvent<Void>
+    }
     
     //MARK: - Output
     struct Output {
@@ -34,7 +36,8 @@ final class DetailViewModel: BaseViewModel {
     private struct Private {
         let infoHeaderTitle = "종목정보"
         let analyzeHeaderTitle = "투자지표"
-        let coin: CoinThumbnail
+        let coin: BehaviorRelay<CoinThumbnail>
+        let favoriteHandler: ((Bool) -> ())?
         let coinInfo = PublishRelay<CGMarketsResponse>()
         let networkError = PublishRelay<CGError>()
         let disposeBag = DisposeBag()
@@ -44,15 +47,21 @@ final class DetailViewModel: BaseViewModel {
     private let priv: Private
     
     //MARK: - Initializer Method
-    init(coin: CoinThumbnail) {
-        priv = Private(coin: coin)
+    init(
+        coin: CoinThumbnail,
+        favoriteHandler: ((Bool) -> ())? = nil
+    ) {
+        priv = Private(
+            coin: BehaviorRelay(value: coin),
+            favoriteHandler: favoriteHandler
+        )
     }
     
     //MARK: - Transform
     func transform(input: Input) -> Output {
-        let coinIconImage = Observable.just(priv.coin.thumb)
-        let coinName = Observable.just(priv.coin.name)
-        let isFavorite = BehaviorRelay(value: priv.coin.isFavorite)
+        let coinIconImage = Observable.just(priv.coin.value.thumb)
+        let coinName = Observable.just(priv.coin.value.name)
+        let isFavorite = BehaviorRelay(value: priv.coin.value.isFavorite)
         let currentPrice = PublishRelay<String>()
         let volatility = PublishRelay<VolatilityInfo>()
         let chartInfo = PublishRelay<CoinChartInfo>()
@@ -63,11 +72,10 @@ final class DetailViewModel: BaseViewModel {
         let analyze = PublishRelay<CoinAnalyze>()
         let alert = PublishRelay<AlertInfo>()
         
-        Observable.just(priv.coin.id)
-            .debug("fetch")
+        priv.coin
             .flatMapLatest {
                 NetworkManager.shared.request(
-                    CGRequest.markets([.krw], [$0]),
+                    CGRequest.markets([.krw], [$0.id]),
                     [CGMarketsResponse].self,
                     CGError.self
                 )
@@ -93,6 +101,27 @@ final class DetailViewModel: BaseViewModel {
                 info.accept(coin.info)
                 analyze.accept(coin.analyze)
             })
+            .disposed(by: priv.disposeBag)
+        
+        input.favoriteTap
+            .withLatestFrom(priv.coin)
+            .map {
+                let isFavorite = UserStaticStorage.favoriteIds.contains($0.id)
+                
+                switch isFavorite {
+                case true:
+                    UserStorage.shared.deleteFavorite(coinId: $0.id)
+                case false:
+                    UserStorage.shared.addFavorite(coin: $0)
+                }
+                
+                return !isFavorite
+            }
+            .map {
+                self.priv.favoriteHandler?($0)
+                return $0
+            }
+            .bind(to: isFavorite)
             .disposed(by: priv.disposeBag)
         
         priv.networkError

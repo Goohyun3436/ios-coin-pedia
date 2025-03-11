@@ -79,8 +79,30 @@ final class SearchViewController: BaseViewController {
                     cellIdentifier: SearchCollectionViewCell.id,
                     cellType: SearchCollectionViewCell.self
                 ),
-                curriedArgument: { item, element, cell in
+                curriedArgument: { [unowned self] item, element, cell in
                     cell.setData(element)
+                    
+                    cell.favoriteButton.rx.tap
+                        .bind(with: self, onNext: { owner, _ in
+                            let isFavorite = cell.favoriteButton.isSelected
+                            
+                            switch isFavorite {
+                            case true:
+                                UserStorage.shared.deleteFavorite(coinId: element.id)
+                            case false:
+                                UserStorage.shared.addFavorite(
+                                    coin: CoinThumbnail(
+                                        id: element.id,
+                                        name: element.name,
+                                        thumb: element.thumb
+                                    )
+                                )
+                            }
+                            
+                            let coins_ = owner.syncCoin(output.coins.value, element, !isFavorite)
+                            output.coins.accept(coins_)
+                        })
+                        .disposed(by: cell.disposeBag)
                 }
             )
             .disposed(by: disposeBag)
@@ -96,6 +118,20 @@ final class SearchViewController: BaseViewController {
                 owner.pushVC(vc)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func syncCoin(
+        _ currentCoins: [CGSearchCoinInfo],
+        _ targetCoin: CGSearchCoinInfo,
+        _ isFavorite: Bool
+    ) -> [CGSearchCoinInfo] {
+        var result = currentCoins
+        
+        if let index = currentCoins.firstIndex(where: { $0.id == targetCoin.id }) {
+            result[index].isFavorite = isFavorite
+        }
+        
+        return result
     }
     
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxSwift
 import Kingfisher
 import SnapKit
 
@@ -16,10 +17,16 @@ final class SearchCollectionViewCell: BaseCollectionViewCell {
     private let nameLabel = AppLabel(.title3)
     private let symbolLabel = AppLabel(.text2, .lightNavy)
     private let rankView = LankLabelView(.subText2, .lightNavy)
-    private let favoriteButton = FavoriteButton()
+    let favoriteButton = FavoriteButton()
     
     //MARK: - Property
     static let id = "SearchCollectionViewCell"
+    var disposeBag = DisposeBag()
+    
+    //MARK: - Override Method
+    override func prepareForReuse() {
+        self.disposeBag = DisposeBag()
+    }
     
     //MARK: - Setup Method
     func setData(_ info: CGSearchCoinInfo) {

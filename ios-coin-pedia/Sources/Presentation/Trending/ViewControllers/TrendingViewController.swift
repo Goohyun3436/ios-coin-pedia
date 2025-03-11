@@ -7,7 +7,6 @@
 
 import UIKit
 import RxSwift
-import RxCocoa
 import RxGesture
 
 final class TrendingViewController: BaseViewController {

@@ -58,7 +58,7 @@ struct CGTrendingCoinInfo: Decodable {
             type: .percentage,
             percentage: data.priceChangePercentage24H.krw
         )
-        isFavorite = true
+        isFavorite = UserStaticStorage.favoriteIds.contains(id)
     }
 }
 
@@ -122,7 +122,7 @@ struct CGSearchCoinInfo: Decodable {
     
     let imagePlaceholder: String
     let rank: String
-    let isFavorite: Bool
+    var isFavorite: Bool
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -143,7 +143,7 @@ struct CGSearchCoinInfo: Decodable {
         
         imagePlaceholder = AppIcon.questionMark.value
         rank = "#\(marketCapRank)"
-        isFavorite = true
+        isFavorite = UserStaticStorage.favoriteIds.contains(id)
     }
 }
 
