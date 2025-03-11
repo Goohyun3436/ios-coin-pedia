@@ -7,6 +7,56 @@
 
 import Foundation
 
+//MARK: - Coin
+struct CoinThumbnail {
+    let id: String
+    let name: String
+    let thumb: String
+    let iconPlaceholder = AppIcon.questionMark.value
+    var isFavorite: Bool = false
+}
+
+struct CoinChartInfo {
+    let data: [CoinChartData]
+    var yMin: Double = 0
+    var yMax: Double = 0
+}
+
+struct CoinChartData: Identifiable {
+    let id = UUID()
+    let time: Date
+    let price: Double
+}
+
+struct CoinInfo {
+    let high24H: CoinPriceInfo
+    let low24H: CoinPriceInfo
+    let ath: CoinPriceInfo
+    let atl: CoinPriceInfo
+}
+
+struct CoinAnalyze {
+    let marketCap: CoinPriceInfo
+    let fdv: CoinPriceInfo
+    let totalVolume: CoinPriceInfo
+}
+
+struct CoinPriceInfo {
+    let title: String
+    let price: Double
+    var priceKRW: String {
+        return "₩\(price.formatted())"
+    }
+    var date: String = " "
+    var dateKR: String {
+        return DateManager.shared.convertFormat(
+            with: date,
+            from: "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+            to: "yy년 M월 d일"
+        )
+    }
+}
+
 //MARK: - Volatility
 enum VolatilityType {
     case percentage

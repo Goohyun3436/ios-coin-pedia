@@ -104,7 +104,11 @@ final class TrendingViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         fetchTrigger
-            .map { self.getCurrentTime() }
+            .map {
+                DateManager.shared.getCurrentTimeTenMin(
+                    dateFormat: self.priv.fetchedDatetimeFormat
+                )
+            }
             .bind(to: fetchedDatetime)
             .disposed(by: priv.disposeBag)
         
@@ -133,7 +137,14 @@ final class TrendingViewModel: BaseViewModel {
         input.coinTap
             .map {
                 DetailViewController(
-                    viewModel: DetailViewModel(coinId: $0.item.id)
+                    viewModel: DetailViewModel(
+                        coin: CoinThumbnail(
+                            id: $0.item.id,
+                            name: $0.item.name,
+                            thumb: $0.item.thumb,
+                            isFavorite: $0.item.isFavorite
+                        )
+                    )
                 )
             }
             .bind(to: pushVC)

@@ -138,7 +138,14 @@ final class SearchViewModel: BaseViewModel {
         input.coinTap
             .map {
                 DetailViewController(
-                    viewModel: DetailViewModel(coinId: $0.id)
+                    viewModel: DetailViewModel(
+                        coin: CoinThumbnail(
+                            id: $0.id,
+                            name: $0.name,
+                            thumb: $0.thumb,
+                            isFavorite: $0.isFavorite
+                        )
+                    )
                 )
             }
             .bind(to: pushVC)

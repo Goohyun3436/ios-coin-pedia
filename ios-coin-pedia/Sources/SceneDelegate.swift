@@ -20,8 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: scene)
         
-//        window?.rootViewController = TabBarController()
-        window?.rootViewController = UINavigationController(rootViewController: DetailViewController(viewModel: DetailViewModel(coinId: "bittensor")))
+        window?.rootViewController = TabBarController()
         
         window?.makeKeyAndVisible()
     }

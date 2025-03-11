@@ -8,7 +8,6 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import SnapKit
 
 final class DetailViewController: BaseViewController {
     
@@ -36,41 +35,72 @@ final class DetailViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
-        Observable.just("url")
+        print(#function)
+        let input = DetailViewModel.Input()
+        let output = viewModel.transform(input: input)
+        
+        output.coinIconImage
             .bind(to: mainView.coinThumbnailView.rx.icon)
             .disposed(by: disposeBag)
         
-        Observable.just("Bitcoin")
+        output.coinName
             .bind(to: mainView.coinThumbnailView.rx.text)
             .disposed(by: disposeBag)
         
-        mainView.priceLabel.text = "₩140,375,094"
+        output.isFavorite
+            .bind(to: mainView.favoriteButton.rx.isSelected)
+            .disposed(by: disposeBag)
         
-        mainView.volatilityView.setData(VolatilityInfo(type: .percentage, percentage: 88.88))
+        output.currentPrice
+            .bind(to: mainView.priceLabel.rx.text)
+            .disposed(by: disposeBag)
         
-        mainView.updateTimeLabel.text = "2/15 18:00:45 업데이트"
+        output.volatility
+            .bind(with: self, onNext: { owner, volatility in
+                owner.mainView.volatilityView.setData(volatility)
+            })
+            .disposed(by: disposeBag)
         
-        mainView.infoHeader.titleLabel.text = "종목정보"
+        output.chartInfo
+            .bind(with: self, onNext: { owner, chartInfo in
+                owner.mainView.setData(chartInfo)
+            })
+            .disposed(by: disposeBag)
         
-        mainView.infoView.high24H.titleLabel.text = "24시간 고가"
-        mainView.infoView.high24H.priceLabel.text = "₩140,375,094"
-        mainView.infoView.low24H.titleLabel.text = "24시간 저가"
-        mainView.infoView.low24H.priceLabel.text = "₩140,375,094"
-        mainView.infoView.ath.titleLabel.text = "역대 최고가"
-        mainView.infoView.ath.priceLabel.text = "₩140,375,094"
-        mainView.infoView.ath.subLabel.text = "25년 1월 20일"
-        mainView.infoView.atl.titleLabel.text = "역대 최저가"
-        mainView.infoView.atl.priceLabel.text = "₩140,375,094"
-        mainView.infoView.atl.subLabel.text = "25년 1월 20일"
+        output.updateTime
+            .bind(to: mainView.updateTimeLabel.rx.text)
+            .disposed(by: disposeBag)
         
-        mainView.analyzeHeader.titleLabel.text = "투자지표"
+        output.infoHeaderTitle
+            .bind(to: mainView.infoHeader.titleLabel.rx.text)
+            .disposed(by: disposeBag)
         
-        mainView.analyzeView.marketCap.titleLabel.text = "시가총액"
-        mainView.analyzeView.marketCap.priceLabel.text = "₩140,375,094,534,545,345,456"
-        mainView.analyzeView.fdv.titleLabel.text = "완전 희석 가치(FDV)"
-        mainView.analyzeView.fdv.priceLabel.text = "₩140,375,094,534,545,345,456"
-        mainView.analyzeView.totalVolume.titleLabel.text = "총 거래량"
-        mainView.analyzeView.totalVolume.priceLabel.text = "₩140,375,094,534,545,345,456"
+        output.info
+            .bind(with: self, onNext: { owner, info in
+                owner.mainView.infoView.high24H.setData(info.high24H)
+                owner.mainView.infoView.low24H.setData(info.low24H)
+                owner.mainView.infoView.ath.setData(info.ath)
+                owner.mainView.infoView.atl.setData(info.atl)
+            })
+            .disposed(by: disposeBag)
+        
+        output.analyzeHeaderTitle
+            .bind(to: mainView.analyzeHeader.titleLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.analyze
+            .bind(with: self, onNext: { owner, info in
+                owner.mainView.analyzeView.marketCap.setData(info.marketCap)
+                owner.mainView.analyzeView.fdv.setData(info.fdv)
+                owner.mainView.analyzeView.totalVolume.setData(info.totalVolume)
+            })
+            .disposed(by: disposeBag)
+        
+        output.alert
+            .bind(with: self, onNext: { owner, alert in
+                owner.presentAlert(alert)
+            })
+            .disposed(by: disposeBag)
     }
     
 }

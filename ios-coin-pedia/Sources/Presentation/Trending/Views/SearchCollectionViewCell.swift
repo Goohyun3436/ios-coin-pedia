@@ -30,7 +30,7 @@ final class SearchCollectionViewCell: BaseCollectionViewCell {
         nameLabel.text = info.name
         symbolLabel.text = info.symbol
         rankView.label.text = info.rank
-        favoriteButton.isSelected = info.favorite
+        favoriteButton.isSelected = info.isFavorite
     }
     
     override func setupUI() {

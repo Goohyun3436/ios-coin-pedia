@@ -11,16 +11,17 @@ import SnapKit
 final class CoinPriceView: BaseView {
     
     //MARK: - UI Property
-    let titleLabel = AppLabel(.text2, .lightNavy)
-    let priceLabel = AppLabel(.text1)
-    let subLabel = AppLabel(.subText3, .lightNavy)
-    
-    init() {
-        super.init(frame: .zero)
-        subLabel.text = " "
-    }
+    private let titleLabel = AppLabel(.text2, .lightNavy)
+    private let priceLabel = AppLabel(.text1)
+    private let subLabel = AppLabel(.subText3, .lightNavy)
     
     //MARK: - Setup Method
+    func setData(_ info: CoinPriceInfo) {
+        titleLabel.text = info.title
+        priceLabel.text = info.priceKRW
+        subLabel.text = info.dateKR
+    }
+    
     override func setupUI() {
         [titleLabel, priceLabel, subLabel].forEach {
             addSubview($0)
