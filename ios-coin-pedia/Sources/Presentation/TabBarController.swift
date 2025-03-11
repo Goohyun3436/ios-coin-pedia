@@ -8,8 +8,8 @@
 import UIKit
 
 private enum TabBar: String, CaseIterable {
-    case trending
     case ticker
+    case trending
     case user
     
     var vc: UIViewController.Type {
