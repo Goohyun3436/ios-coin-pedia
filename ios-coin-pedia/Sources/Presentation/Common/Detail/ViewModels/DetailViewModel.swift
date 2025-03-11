@@ -64,7 +64,6 @@ final class DetailViewModel: BaseViewModel {
         let alert = PublishRelay<AlertInfo>()
         
         Observable.just(priv.coin.id)
-            .debug("fetch")
             .flatMapLatest {
                 NetworkManager.shared.request(
                     CGRequest.markets([.krw], [$0]),

@@ -39,35 +39,28 @@ final class NetworkManager {
             let disposables = Disposables.create()
             
             guard let urlRequest = self.setupRequest(request) else {
-                print("======urlRequest======")
                 observer(.success(.failure(ErrorType(statusCode: 0))))
                 return disposables
             }
             
-            print(urlRequest)
-            
             URLSession.shared.dataTask(with: urlRequest) { data, response, err in
                 
                 if let _ = err {
-                    print("======err======")
                     observer(.success(.failure(ErrorType(statusCode: 0))))
                     return
                 }
                 
                 guard let data else {
-                    print("======data======")
                     observer(.success(.failure(ErrorType(statusCode: 0))))
                     return
                 }
                 
                 guard let response = response as? HTTPURLResponse else {
-                    print("======response======")
                     observer(.success(.failure(ErrorType(statusCode: 0))))
                     return
                 }
                 
                 guard (200...299).contains(response.statusCode) else {
-                    print("======statusCode(\(response.statusCode))======")
                     observer(.success(.failure(ErrorType(statusCode: response.statusCode))))
                     return
                 }
@@ -79,8 +72,6 @@ final class NetworkManager {
                     let response = try decoder.decode(responseT.self, from: data)
                     observer(.success(.success(response)))
                 } catch {
-                    print("======data decode======")
-                    print(error)
                     observer(.success(.failure(ErrorType(statusCode: 0))))
                 }
             }.resume()

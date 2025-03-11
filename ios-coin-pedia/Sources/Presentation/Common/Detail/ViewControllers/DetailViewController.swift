@@ -34,7 +34,6 @@ final class DetailViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
-        print(#function)
         let input = DetailViewModel.Input()
         let output = viewModel.transform(input: input)
         
