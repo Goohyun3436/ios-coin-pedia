@@ -7,6 +7,15 @@
 
 import Foundation
 
+//MARK: - Coin
+struct CoinThumbnail {
+    let id: String
+    let name: String
+    let thumb: String
+    let iconPlaceholder = AppIcon.questionMark.value
+    var isFavorite: Bool = false
+}
+
 //MARK: - Volatility
 enum VolatilityType {
     case percentage

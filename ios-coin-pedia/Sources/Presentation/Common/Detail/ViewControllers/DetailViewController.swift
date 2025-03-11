@@ -8,7 +8,6 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import SnapKit
 
 final class DetailViewController: BaseViewController {
     
@@ -36,12 +35,19 @@ final class DetailViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
-        Observable.just("url")
+        let input = DetailViewModel.Input()
+        let output = viewModel.transform(input: input)
+        
+        output.coinIconImage
             .bind(to: mainView.coinThumbnailView.rx.icon)
             .disposed(by: disposeBag)
         
-        Observable.just("Bitcoin")
+        output.coinName
             .bind(to: mainView.coinThumbnailView.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.isFavorite
+            .bind(to: mainView.favoriteButton.rx.isSelected)
             .disposed(by: disposeBag)
         
         mainView.priceLabel.text = "₩140,375,094"

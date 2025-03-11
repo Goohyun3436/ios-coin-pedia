@@ -30,6 +30,7 @@ struct CGTrendingCoinInfo: Decodable {
     let rank: String
     let imagePlaceholder: String
     let volatility: VolatilityInfo
+    let isFavorite: Bool
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -57,6 +58,7 @@ struct CGTrendingCoinInfo: Decodable {
             type: .percentage,
             percentage: data.priceChangePercentage24H.krw
         )
+        isFavorite = true
     }
 }
 
@@ -120,7 +122,7 @@ struct CGSearchCoinInfo: Decodable {
     
     let imagePlaceholder: String
     let rank: String
-    let favorite: Bool
+    let isFavorite: Bool
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -141,7 +143,7 @@ struct CGSearchCoinInfo: Decodable {
         
         imagePlaceholder = AppIcon.questionMark.value
         rank = "#\(marketCapRank)"
-        favorite = true
+        isFavorite = true
     }
 }
 

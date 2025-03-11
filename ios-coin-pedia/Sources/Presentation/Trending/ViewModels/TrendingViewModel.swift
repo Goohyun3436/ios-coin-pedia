@@ -133,7 +133,14 @@ final class TrendingViewModel: BaseViewModel {
         input.coinTap
             .map {
                 DetailViewController(
-                    viewModel: DetailViewModel(coinId: $0.item.id)
+                    viewModel: DetailViewModel(
+                        coin: CoinThumbnail(
+                            id: $0.item.id,
+                            name: $0.item.name,
+                            thumb: $0.item.thumb,
+                            isFavorite: $0.item.isFavorite
+                        )
+                    )
                 )
             }
             .bind(to: pushVC)
