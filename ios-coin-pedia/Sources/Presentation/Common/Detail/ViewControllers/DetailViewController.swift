@@ -71,7 +71,9 @@ final class DetailViewController: BaseViewController {
             .bind(to: mainView.updateTimeLabel.rx.text)
             .disposed(by: disposeBag)
         
-        mainView.infoHeader.titleLabel.text = "종목정보"
+        output.infoHeaderTitle
+            .bind(to: mainView.infoHeader.titleLabel.rx.text)
+            .disposed(by: disposeBag)
         
         mainView.infoView.high24H.titleLabel.text = "24시간 고가"
         mainView.infoView.high24H.priceLabel.text = "₩140,375,094"
@@ -84,7 +86,9 @@ final class DetailViewController: BaseViewController {
         mainView.infoView.atl.priceLabel.text = "₩140,375,094"
         mainView.infoView.atl.subLabel.text = "25년 1월 20일"
         
-        mainView.analyzeHeader.titleLabel.text = "투자지표"
+        output.analyzeHeaderTitle
+            .bind(to: mainView.analyzeHeader.titleLabel.rx.text)
+            .disposed(by: disposeBag)
         
         mainView.analyzeView.marketCap.titleLabel.text = "시가총액"
         mainView.analyzeView.marketCap.priceLabel.text = "₩140,375,094,534,545,345,456"

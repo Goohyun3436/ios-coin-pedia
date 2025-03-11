@@ -23,11 +23,14 @@ final class DetailViewModel: BaseViewModel {
         let volatility: PublishRelay<VolatilityInfo>
         let chartInfo: PublishRelay<CoinChartInfo>
         let updateTime: PublishRelay<String>
+        let infoHeaderTitle: Observable<String>
+        let analyzeHeaderTitle: Observable<String>
     }
     
     //MARK: - Private
     private struct Private {
-//        let infoHeaderTitle
+        let infoHeaderTitle = "종목정보"
+        let analyzeHeaderTitle = "투자지표"
         let coin: CoinThumbnail
         let coinInfo = PublishRelay<CGMarketsResponse>()
         let disposeBag = DisposeBag()
@@ -50,6 +53,8 @@ final class DetailViewModel: BaseViewModel {
         let volatility = PublishRelay<VolatilityInfo>()
         let chartInfo = PublishRelay<CoinChartInfo>()
         let updateTime = PublishRelay<String>()
+        let infoHeaderTitle = Observable.just(priv.infoHeaderTitle)
+        let analyzeHeaderTitle = Observable.just(priv.analyzeHeaderTitle)
         
         Observable.just(priv.coin.id)
             .debug("fetch")
@@ -91,7 +96,9 @@ final class DetailViewModel: BaseViewModel {
             currentPrice: currentPrice,
             volatility: volatility,
             chartInfo: chartInfo,
-            updateTime: updateTime
+            updateTime: updateTime,
+            infoHeaderTitle: infoHeaderTitle,
+            analyzeHeaderTitle: analyzeHeaderTitle
         )
     }
     
