@@ -24,9 +24,11 @@ final class UserStorage {
         let favorites = Array(repo.fetch(CoinTable.self))
         UserStaticStorage.favorites = favorites
         UserStaticStorage.favoriteIds = favorites.map { $0.id }
+        
+        printFileURL()
     }
     
-    func addLike(coin: CoinThumbnail) {
+    func addFavorite(coin: CoinThumbnail) {
         let coin = CoinTable(
             id: coin.id,
             name: coin.name,

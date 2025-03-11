@@ -34,7 +34,9 @@ final class DetailViewController: BaseViewController {
     
     //MARK: - Setup Method
     override func setupBind() {
-        let input = DetailViewModel.Input()
+        let input = DetailViewModel.Input(
+            favoriteTap: mainView.favoriteButton.rx.tap
+        )
         let output = viewModel.transform(input: input)
         
         output.coinIconImage
