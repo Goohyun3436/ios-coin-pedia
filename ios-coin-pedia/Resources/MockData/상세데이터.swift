@@ -35,7 +35,7 @@ struct CoinDetail {
   let atlDate: String
   let roi: CoinROI?
   let lastUpdated: String
-  let sparklineIn7d: SparklineData?
+  let sparklineIn7d: SparklineData
   let priceChangePercentage7dInCurrency: Double?
 
 }
