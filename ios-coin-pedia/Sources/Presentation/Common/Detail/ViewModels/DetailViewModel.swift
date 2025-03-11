@@ -21,6 +21,7 @@ final class DetailViewModel: BaseViewModel {
         let isFavorite: BehaviorRelay<Bool>
         let currentPrice: PublishRelay<String>
         let volatility: PublishRelay<VolatilityInfo>
+        let chartInfo: PublishRelay<CoinChartInfo>
         let updateTime: PublishRelay<String>
     }
     
@@ -47,6 +48,7 @@ final class DetailViewModel: BaseViewModel {
         let isFavorite = BehaviorRelay(value: priv.coin.isFavorite)
         let currentPrice = PublishRelay<String>()
         let volatility = PublishRelay<VolatilityInfo>()
+        let chartInfo = PublishRelay<CoinChartInfo>()
         let updateTime = PublishRelay<String>()
         
         Observable.just(priv.coin.id)
@@ -77,6 +79,7 @@ final class DetailViewModel: BaseViewModel {
             .bind(with: self, onNext: { owner, coin in
                 currentPrice.accept(coin.currentPriceStr)
                 volatility.accept(coin.volatility)
+                chartInfo.accept(coin.chartInfo)
                 updateTime.accept(coin.lastUpdatedStr)
             })
             .disposed(by: priv.disposeBag)
@@ -87,6 +90,7 @@ final class DetailViewModel: BaseViewModel {
             isFavorite: isFavorite,
             currentPrice: currentPrice,
             volatility: volatility,
+            chartInfo: chartInfo,
             updateTime: updateTime
         )
     }

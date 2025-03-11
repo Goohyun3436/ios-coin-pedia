@@ -61,6 +61,12 @@ final class DetailViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
+        output.chartInfo
+            .bind(with: self, onNext: { owner, chartInfo in
+                owner.mainView.setData(chartInfo)
+            })
+            .disposed(by: disposeBag)
+        
         output.updateTime
             .bind(to: mainView.updateTimeLabel.rx.text)
             .disposed(by: disposeBag)

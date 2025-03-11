@@ -18,11 +18,7 @@ final class DetailView: BaseView {
     let favoriteButton = FavoriteButton()
     let priceLabel = AppLabel(.largeTitle)
     let volatilityView = VolatilityIconView()
-    let chartView: UIView = {
-        let hosting = UIHostingController(rootView: PriceChartView())
-        guard let view = hosting.view else { return UIView() }
-        return view
-    }()
+    let emptyChartView = UIView()
     let updateTimeLabel = AppLabel(.subText3, .lightNavy)
     let infoHeader = SectionHeaderView(.button)
     let infoView = DetailInfoView()
@@ -30,8 +26,22 @@ final class DetailView: BaseView {
     let analyzeView = DetailAnalyzeView()
     
     //MARK: - Setup Method
+    func setData(_ info: CoinChartInfo) {
+        let chartView: UIView = {
+            let hosting = UIHostingController(rootView: PriceChartView(info))
+            guard let view = hosting.view else { return UIView() }
+            return view
+        }()
+        
+        emptyChartView.addSubview(chartView)
+        
+        chartView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
     override func setupUI() {
-        [priceLabel, volatilityView, chartView, updateTimeLabel, infoHeader, infoView, analyzeHeader, analyzeView].forEach {
+        [priceLabel, volatilityView, emptyChartView, updateTimeLabel, infoHeader, infoView, analyzeHeader, analyzeView].forEach {
             contentView.addSubview($0)
         }
         
@@ -65,14 +75,14 @@ final class DetailView: BaseView {
             make.leading.equalTo(safeAreaLayoutGuide).offset(marginH)
         }
         
-        chartView.snp.makeConstraints { make in
+        emptyChartView.snp.makeConstraints { make in
             make.top.equalTo(volatilityView.snp.bottom).offset(marginV)
             make.horizontalEdges.equalToSuperview().inset(marginH)
             make.height.equalTo(chartHeight)
         }
         
         updateTimeLabel.snp.makeConstraints { make in
-            make.top.equalTo(chartView.snp.bottom).offset(textMargin)
+            make.top.equalTo(emptyChartView.snp.bottom).offset(textMargin)
             make.leading.equalToSuperview().offset(marginH)
         }
         
@@ -96,6 +106,12 @@ final class DetailView: BaseView {
             make.horizontalEdges.equalToSuperview().inset(marginH)
             make.bottom.equalToSuperview().inset(marginV)
         }
+    }
+    
+    override func setupAttributes() {
+        scrollView.alwaysBounceVertical = false
+        scrollView.bounces = false
+        scrollView.showsHorizontalScrollIndicator = false
     }
     
 }
