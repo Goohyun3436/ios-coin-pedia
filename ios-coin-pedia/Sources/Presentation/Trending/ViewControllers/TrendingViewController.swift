@@ -96,6 +96,18 @@ final class TrendingViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
+        output.presentVC
+            .bind(with: self, onNext: { owner, vc in
+                owner.presentVC(vc)
+            })
+            .disposed(by: disposeBag)
+        
+        output.dismissVC
+            .bind(with: self, onNext: { owner, _ in
+                owner.dismissVC()
+            })
+            .disposed(by: disposeBag)
+        
         output.pushVC
             .bind(with: self, onNext: { owner, vc in
                 owner.pushVC(vc)

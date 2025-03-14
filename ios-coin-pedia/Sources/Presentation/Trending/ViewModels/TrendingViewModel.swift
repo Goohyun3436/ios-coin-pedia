@@ -33,6 +33,8 @@ final class TrendingViewModel: BaseViewModel {
         let coins: PublishRelay<[CGCoinsInfo]>
         let nfts: PublishRelay<[CGNftInfo]>
         let alert: PublishRelay<AlertInfo>
+        let presentVC: PublishRelay<BaseViewController>
+        let dismissVC: PublishRelay<Void>
         let pushVC: PublishRelay<BaseViewController>
     }
     
@@ -49,6 +51,7 @@ final class TrendingViewModel: BaseViewModel {
         let nftElementCount = 7
         let searchError = PublishRelay<SearchError>()
         let networkError = PublishRelay<CGError>()
+        let networkErrorInfo = PublishRelay<NetworkModalInfo>()
         let disposeBag = DisposeBag()
     }
     
@@ -66,6 +69,8 @@ final class TrendingViewModel: BaseViewModel {
         let coins = PublishRelay<[CGCoinsInfo]>()
         let nfts = PublishRelay<[CGNftInfo]>()
         let alert = PublishRelay<AlertInfo>()
+        let presentVC = PublishRelay<BaseViewController>()
+        let dismissVC = PublishRelay<Void>()
         let pushVC = PublishRelay<BaseViewController>()
         
         var fetchCycle: Disposable?
@@ -161,8 +166,30 @@ final class TrendingViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         priv.networkError
-            .map { AlertInfo(title: $0.title, message: $0.message) }
-            .bind(to: alert)
+            .withUnretained(self)
+            .map { vm, error in
+                NetworkModalInfo(
+                    title: error.title,
+                    message: error.message,
+                    submitHandler: {
+                        dismissVC.accept(())
+                        vm.priv.fetchTrigger.accept(())
+                    },
+                    cancelHandler: {
+                        dismissVC.accept(())
+                    }
+                )
+            }
+            .bind(to: priv.networkErrorInfo)
+            .disposed(by: priv.disposeBag)
+        
+        priv.networkErrorInfo
+            .map {
+                let vc = ModalViewController(viewModel: ModalViewModel(info: $0))
+                vc.modalPresentationStyle = .overFullScreen
+                return vc
+            }
+            .bind(to: presentVC)
             .disposed(by: priv.disposeBag)
         
         return Output(
@@ -175,6 +202,8 @@ final class TrendingViewModel: BaseViewModel {
             coins: coins,
             nfts: nfts,
             alert: alert,
+            presentVC: presentVC,
+            dismissVC: dismissVC,
             pushVC: pushVC
         )
     }

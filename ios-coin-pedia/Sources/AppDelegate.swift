@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         AppAppearance.setup()
         
-        Thread.sleep(forTimeInterval: 2.0)
+//        Thread.sleep(forTimeInterval: 2.0)
         
         return true
     }

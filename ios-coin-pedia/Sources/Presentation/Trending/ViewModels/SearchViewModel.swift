@@ -32,6 +32,8 @@ final class SearchViewModel: BaseViewModel {
         let searchText: BehaviorRelay<String>
         let coins: BehaviorRelay<[CGSearchCoinInfo]>
         let alert: PublishRelay<AlertInfo>
+        let presentVC: PublishRelay<BaseViewController>
+        let dismissVC: PublishRelay<Void>
         let pushVC: PublishRelay<BaseViewController>
     }
     
@@ -44,6 +46,7 @@ final class SearchViewModel: BaseViewModel {
         let fetchTrigger = PublishRelay<String>()
         let searchError = PublishRelay<SearchError>()
         let networkError = PublishRelay<CGError>()
+        let networkErrorInfo = PublishRelay<NetworkModalInfo>()
         let disposeBag = DisposeBag()
     }
     
@@ -65,6 +68,8 @@ final class SearchViewModel: BaseViewModel {
         let scrollOffset = PublishRelay<CGPoint>()
         let coins = BehaviorRelay(value: [CGSearchCoinInfo]())
         let alert = PublishRelay<AlertInfo>()
+        let presentVC = PublishRelay<BaseViewController>()
+        let dismissVC = PublishRelay<Void>()
         let pushVC = PublishRelay<BaseViewController>()
         
         let query = priv.query.share(replay: 1)
@@ -85,6 +90,7 @@ final class SearchViewModel: BaseViewModel {
                 case .success(let data):
                     coins.accept(data.coins)
                 case .failure(let error):
+                    print(error)
                     owner.priv.networkError.accept(error)
                 }
             })
@@ -161,8 +167,30 @@ final class SearchViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         priv.networkError
-            .map { AlertInfo(title: $0.title, message: $0.message) }
-            .bind(to: alert)
+            .withUnretained(self)
+            .map { vm, error in
+                NetworkModalInfo(
+                    title: error.title,
+                    message: error.message,
+                    submitHandler: {
+                        dismissVC.accept(())
+                        vm.priv.fetchTrigger.accept(vm.priv.query.value)
+                    },
+                    cancelHandler: {
+                        dismissVC.accept(())
+                    }
+                )
+            }
+            .bind(to: priv.networkErrorInfo)
+            .disposed(by: priv.disposeBag)
+        
+        priv.networkErrorInfo
+            .map {
+                let vc = ModalViewController(viewModel: ModalViewModel(info: $0))
+                vc.modalPresentationStyle = .overFullScreen
+                return vc
+            }
+            .bind(to: presentVC)
             .disposed(by: priv.disposeBag)
         
         return Output(
@@ -174,6 +202,8 @@ final class SearchViewModel: BaseViewModel {
             searchText: searchText,
             coins: coins,
             alert: alert,
+            presentVC: presentVC,
+            dismissVC: dismissVC,
             pushVC: pushVC
         )
     }

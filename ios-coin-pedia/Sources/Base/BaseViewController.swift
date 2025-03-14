@@ -38,11 +38,19 @@ class BaseViewController: UIViewController {
 extension BaseViewController {
     
     func pushVC(_ vc: BaseViewController) {
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func popVC() {
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func presentVC(_ vc: BaseViewController) {
+        present(vc, animated: true)
+    }
+    
+    func dismissVC() {
+        dismiss(animated: true)
     }
     
     func presentAlert(_ alert: AlertInfo) {
