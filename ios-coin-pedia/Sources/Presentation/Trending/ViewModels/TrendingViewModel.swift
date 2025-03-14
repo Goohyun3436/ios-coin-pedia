@@ -45,13 +45,16 @@ final class TrendingViewModel: BaseViewModel {
         let nftHeaderTitle = "인기 NFT"
         let fetchedDatetimeFormat = "MM.dd HH:mm 기준"
         let fetchCycleSec: TimeInterval = 60 * 10
-        let timerTrigger = PublishRelay<Void>()
-        let fetchTrigger = PublishRelay<Void>()
         let coinElementCount = 14
         let nftElementCount = 7
+        let networkErrorCountMax = 3
+        let trigger = PublishRelay<Void>()
+        let timerTrigger = PublishRelay<Void>()
+        let fetchTrigger = PublishRelay<Void>()
         let searchError = PublishRelay<SearchError>()
         let networkError = PublishRelay<CGError>()
         let networkErrorInfo = PublishRelay<NetworkModalInfo>()
+        let networkErrorCount = BehaviorRelay(value: 0)
         let disposeBag = DisposeBag()
     }
     
@@ -76,16 +79,21 @@ final class TrendingViewModel: BaseViewModel {
         var fetchCycle: Disposable?
         let fetchTrigger = priv.fetchTrigger.share(replay: 1)
         let searchTap = input.searchTap.share(replay: 1)
+        let networkError = priv.networkError.share(replay: 1)
         
         input.viewWillAppear
-            .map { fetchCycle = self.makeFetchCycle() }
-            .bind(to: priv.timerTrigger, priv.fetchTrigger)
+            .bind(to: priv.trigger)
             .disposed(by: priv.disposeBag)
         
         input.viewDidDisappear
             .bind(with: self, onNext: { owner, _ in
                 fetchCycle?.dispose()
             })
+            .disposed(by: priv.disposeBag)
+        
+        priv.trigger
+            .map { fetchCycle = self.makeFetchCycle() }
+            .bind(to: priv.timerTrigger, priv.fetchTrigger)
             .disposed(by: priv.disposeBag)
         
         fetchTrigger
@@ -165,15 +173,35 @@ final class TrendingViewModel: BaseViewModel {
             .bind(to: alert)
             .disposed(by: priv.disposeBag)
         
-        priv.networkError
+        networkError
+            .bind(with: self, onNext: { owner, _ in
+                fetchCycle?.dispose()
+            })
+            .disposed(by: priv.disposeBag)
+        
+        networkError
+            .withLatestFrom(priv.networkErrorCount)
+            .map { $0 + 1 }
+            .bind(to: priv.networkErrorCount)
+            .disposed(by: priv.disposeBag)
+        
+        networkError
             .withUnretained(self)
-            .map { vm, error in
+            .map { owner, error in
                 NetworkModalInfo(
                     title: error.title,
                     message: error.message,
                     submitHandler: {
-                        dismissVC.accept(())
-                        vm.priv.fetchTrigger.accept(())
+                        owner.priv.trigger.accept(())
+                        
+                        let isMax = owner.priv.networkErrorCount.value >= owner.priv.networkErrorCountMax
+                        
+                        switch isMax {
+                        case true:
+                            print("Toast Message")
+                        case false:
+                            dismissVC.accept(())
+                        }
                     },
                     cancelHandler: {
                         dismissVC.accept(())
@@ -234,19 +262,6 @@ final class TrendingViewModel: BaseViewModel {
         result.nfts = Array(data.nfts.prefix(priv.nftElementCount))
         
         return result
-    }
-    
-    private func getCurrentTime() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = priv.fetchedDatetimeFormat
-        var dateStr = formatter.string(from: Date())
-        
-        //refactor point: 화면 첫 진입 시, MN분 -> M0분 으로 교체 필요
-        var dateArray = Array(dateStr)
-        dateArray[10] = "0"
-        dateStr = String(dateArray)
-        
-        return dateStr
     }
     
 }

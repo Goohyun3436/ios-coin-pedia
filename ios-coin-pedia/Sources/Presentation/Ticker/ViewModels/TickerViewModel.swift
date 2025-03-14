@@ -36,6 +36,7 @@ final class TickerViewModel: BaseViewModel {
         let headerTitle = "코인"
         let fetchCycleSec = 5
         let networkErrorCountMax = 3
+        let trigger = PublishRelay<Void>()
         let timerTrigger = PublishRelay<Void>()
         let fetchTrigger = PublishRelay<Void>()
         let sort = BehaviorRelay(value: TickerSort.accPrice)
@@ -64,8 +65,7 @@ final class TickerViewModel: BaseViewModel {
         let networkError = priv.networkError.share(replay: 1)
         
         input.viewWillAppear
-            .map { fetchCycle = self.makeFetchCycle() }
-            .bind(to: priv.timerTrigger)
+            .bind(to: priv.trigger)
             .disposed(by: priv.disposeBag)
         
         input.viewDidDisappear
@@ -74,8 +74,12 @@ final class TickerViewModel: BaseViewModel {
             })
             .disposed(by: priv.disposeBag)
         
+        priv.trigger
+            .map { fetchCycle = self.makeFetchCycle() }
+            .bind(to: priv.timerTrigger)
+            .disposed(by: priv.disposeBag)
+        
         priv.fetchTrigger
-            .debug("fetchTrigger")
             .flatMapLatest {
                 NetworkManager.shared.request(
                     UBRequest.ticker([.KRW]),
@@ -164,8 +168,7 @@ final class TickerViewModel: BaseViewModel {
                     title: error.title,
                     message: error.message,
                     submitHandler: {
-                        fetchCycle = owner.makeFetchCycle()
-                        owner.priv.timerTrigger.accept(())
+                        owner.priv.trigger.accept(())
                         
                         let isMax = owner.priv.networkErrorCount.value >= owner.priv.networkErrorCountMax
                         
@@ -214,7 +217,6 @@ final class TickerViewModel: BaseViewModel {
                     scheduler: MainScheduler.instance
                 )
             })
-            .debug("timer")
             .map { _ in }
             .bind(to: priv.fetchTrigger)
     }

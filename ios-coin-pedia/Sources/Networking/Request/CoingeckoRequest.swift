@@ -19,7 +19,7 @@ enum CGRequest: APIRequest {
     private var path: String {
         switch self {
         case .trending:
-            return "/search/trending"
+            return "/search/trending2"
         case .search:
             return "/search"
         case .markets:
