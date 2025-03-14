@@ -17,7 +17,7 @@ enum UBRequest: APIRequest {
     private var path: String {
         switch self {
         case .ticker:
-            return "/ticker/all"
+            return "/ticker/all2"
         }
     }
     

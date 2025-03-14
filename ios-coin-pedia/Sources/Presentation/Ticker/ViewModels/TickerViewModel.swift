@@ -27,19 +27,23 @@ final class TickerViewModel: BaseViewModel {
         let changeSortStatus: PublishRelay<TickerSortStatus>
         let accPriceSortStatus: PublishRelay<TickerSortStatus>
         let tickers: PublishRelay<[UBTickerResponse]>
-        let alert: PublishRelay<AlertInfo>
+        let presentVC: PublishRelay<BaseViewController>
+        let dismissVC: PublishRelay<Void>
     }
     
     //MARK: - Private
     private struct Private {
         let headerTitle = "코인"
         let fetchCycleSec = 5
+        let networkErrorCountMax = 3
         let timerTrigger = PublishRelay<Void>()
         let fetchTrigger = PublishRelay<Void>()
         let sort = BehaviorRelay(value: TickerSort.accPrice)
         let sortStatus = BehaviorRelay(value: TickerSortStatus.dsc)
         let tickers = PublishRelay<[UBTickerResponse]>()
         let networkError = PublishRelay<UBError>()
+        let networkErrorInfo = PublishRelay<NetworkModalInfo>()
+        let networkErrorCount = BehaviorRelay(value: 0)
         var disposeBag = DisposeBag()
     }
     
@@ -53,9 +57,11 @@ final class TickerViewModel: BaseViewModel {
         let changeSortStatus = PublishRelay<TickerSortStatus>()
         let accPriceSortStatus = PublishRelay<TickerSortStatus>()
         let tickers = PublishRelay<[UBTickerResponse]>()
-        let alert = PublishRelay<AlertInfo>()
+        let presentVC = PublishRelay<BaseViewController>()
+        let dismissVC = PublishRelay<Void>()
         
         var fetchCycle: Disposable?
+        let networkError = priv.networkError.share(replay: 1)
         
         input.viewWillAppear
             .map { fetchCycle = self.makeFetchCycle() }
@@ -69,6 +75,7 @@ final class TickerViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         priv.fetchTrigger
+            .debug("fetchTrigger")
             .flatMapLatest {
                 NetworkManager.shared.request(
                     UBRequest.ticker([.KRW]),
@@ -80,9 +87,9 @@ final class TickerViewModel: BaseViewModel {
             .bind(with: self, onNext: { owner, response in
                 switch response {
                 case .success(let data):
+                    dismissVC.accept(())
                     owner.priv.tickers.accept(data)
                 case .failure(let error):
-                    fetchCycle?.dispose()
                     owner.priv.networkError.accept(error)
                 }
             })
@@ -138,9 +145,53 @@ final class TickerViewModel: BaseViewModel {
             })
             .disposed(by: priv.disposeBag)
         
-        priv.networkError
-            .map { AlertInfo(title: $0.title, message: $0.message) }
-            .bind(to: alert)
+        networkError
+            .bind(with: self, onNext: { owner, _ in
+                fetchCycle?.dispose()
+            })
+            .disposed(by: priv.disposeBag)
+        
+        networkError
+            .withLatestFrom(priv.networkErrorCount)
+            .map { $0 + 1 }
+            .bind(to: priv.networkErrorCount)
+            .disposed(by: priv.disposeBag)
+        
+        networkError
+            .withUnretained(self)
+            .map { owner, error in
+                NetworkModalInfo(
+                    title: error.title,
+                    message: error.message,
+                    submitHandler: {
+                        fetchCycle = owner.makeFetchCycle()
+                        owner.priv.timerTrigger.accept(())
+                        
+                        let isMax = owner.priv.networkErrorCount.value >= owner.priv.networkErrorCountMax
+                        
+                        switch isMax {
+                        case true:
+                            print("Toast Message")
+                        case false:
+                            dismissVC.accept(())
+                        }
+                    },
+                    cancelHandler: {
+                        fetchCycle?.dispose()
+                        dismissVC.accept(())
+                    }
+                )
+            }
+            .bind(to: priv.networkErrorInfo)
+            .disposed(by: priv.disposeBag)
+        
+        priv.networkErrorInfo
+            .map {
+                let vc = ModalViewController(viewModel: ModalViewModel(info: $0))
+                vc.modalPresentationStyle = .overFullScreen
+                return vc
+            }
+            .bind(to: presentVC)
             .disposed(by: priv.disposeBag)
         
         return Output(
@@ -149,7 +200,8 @@ final class TickerViewModel: BaseViewModel {
             changeSortStatus: changeSortStatus,
             accPriceSortStatus: accPriceSortStatus,
             tickers: tickers,
-            alert: alert
+            presentVC: presentVC,
+            dismissVC: dismissVC
         )
     }
     
@@ -157,11 +209,12 @@ final class TickerViewModel: BaseViewModel {
         return priv.timerTrigger
             .flatMapLatest({
                 Observable<Int>.timer(
-                    .seconds(1),
+                    .seconds(0),
                     period: .seconds(self.priv.fetchCycleSec),
                     scheduler: MainScheduler.instance
                 )
             })
+            .debug("timer")
             .map { _ in }
             .bind(to: priv.fetchTrigger)
     }
