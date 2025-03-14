@@ -35,6 +35,7 @@ final class DetailViewController: BaseViewController {
     //MARK: - Setup Method
     override func setupBind() {
         let input = DetailViewModel.Input(
+            viewWillAppear: rx.viewWillAppear,
             favoriteTap: mainView.favoriteButton.rx.tap
         )
         let output = viewModel.transform(input: input)
@@ -96,9 +97,21 @@ final class DetailViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
-        output.alert
-            .bind(with: self, onNext: { owner, alert in
-                owner.presentAlert(alert)
+        output.presentVC
+            .bind(with: self, onNext: { owner, vc in
+                owner.presentVC(vc)
+            })
+            .disposed(by: disposeBag)
+        
+        output.dismissVC
+            .bind(with: self, onNext: { owner, _ in
+                owner.dismissVC()
+            })
+            .disposed(by: disposeBag)
+        
+        output.presentToast
+            .bind(with: self, onNext: { owner, toastType in
+                owner.presentToast(toastType)
             })
             .disposed(by: disposeBag)
     }

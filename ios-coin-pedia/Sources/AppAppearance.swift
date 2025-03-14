@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Toast
     
 enum AppColor {
     case navy
@@ -193,6 +194,12 @@ final class AppAppearance {
         
         UICollectionView.appearance().backgroundColor = AppColor.white.value
         UICollectionViewCell.appearance().backgroundColor = AppColor.white.value
+        
+        ToastManager.shared.style.backgroundColor = AppColor.red.value
+        ToastManager.shared.style.messageColor = AppColor.white.value
+        ToastManager.shared.style.messageFont = AppFont.title2.value
+        ToastManager.shared.style.activityBackgroundColor = AppColor.overlay.value
+        ToastManager.shared.style.activityIndicatorColor = AppColor.white.value
     }
     
 }

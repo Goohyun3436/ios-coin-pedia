@@ -74,8 +74,27 @@ enum SearchError: Error {
     }
 }
 
-//MARK: - Alert
-struct AlertInfo {
-    let title: String?
-    let message: String?
+//MARK: - Error Modal
+struct ErrorModalInfo {
+    var title: String = "안내"
+    var message: String = "네트워크 연결이 일시적으로 원활하지 않습니다. 데이터 또는 Wi-Fi 연결 상태를 확인해주세요."
+    var submitButtonTitle: String = "다시 시도하기"
+    var cancelButtonTitle: String = "취소"
+    var submitHandler: (() -> Void)? = nil
+    var cancelHandler: (() -> Void)? = nil
+}
+
+//MARK: - Toast
+enum ToastType {
+    case network
+    case spinner
+    
+    var message: String? {
+        switch self {
+        case .network:
+            return "네트워크 통신이 원활하지 않습니다."
+        case .spinner:
+            return nil
+        }
+    }
 }

@@ -14,20 +14,28 @@ final class ModalView: BaseView {
     private let wrap = UIView()
     let titleLabel = AppLabel(.title2)
     let messageLabel = AppLabel(.text2)
+    private let buttonWrap = UIStackView()
+    let cancelButton = UIButton()
     let submitButton = UIButton()
     
     //MARK: - Override Method
     override func draw(_ rect: CGRect) {
         messageLabel.setLineSpacing(4)
         
-        let borderTop = UIView(frame: CGRectMake(0, 0, submitButton.frame.size.width, 0.5))
-        borderTop.backgroundColor = AppColor.lightNavy.value
-        submitButton.addSubview(borderTop)
+        [submitButton, cancelButton].forEach {
+            let borderTop = UIView(frame: CGRectMake(0, 0, $0.frame.size.width, 0.5))
+            borderTop.backgroundColor = AppColor.lightNavy.value
+            $0.addSubview(borderTop)
+        }
     }
     
     //MARK: - Setup Method
     override func setupUI() {
-        [titleLabel, messageLabel, submitButton].forEach {
+        [cancelButton, submitButton].forEach {
+            buttonWrap.addArrangedSubview($0)
+        }
+        
+        [titleLabel, messageLabel, buttonWrap].forEach {
             wrap.addSubview($0)
         }
         
@@ -38,7 +46,7 @@ final class ModalView: BaseView {
         let modalHMargin: CGFloat = 50
         let paddingV: CGFloat = 20
         let paddingH: CGFloat = 50
-        let bottomHeight: CGFloat = 44
+        let buttonHeight: CGFloat = 44
         
         wrap.snp.makeConstraints { make in
             make.centerY.equalTo(safeAreaLayoutGuide)
@@ -55,11 +63,15 @@ final class ModalView: BaseView {
             make.horizontalEdges.equalToSuperview().inset(paddingH)
         }
         
-        submitButton.snp.makeConstraints { make in make.top.equalTo(messageLabel.snp.bottom).offset(paddingV)
+        buttonWrap.snp.makeConstraints { make in
+            make.top.equalTo(messageLabel.snp.bottom).offset(paddingV)
             make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(bottomHeight)
+            make.height.equalTo(buttonHeight)
             make.bottom.equalToSuperview()
         }
+        buttonWrap.axis = .horizontal
+        buttonWrap.spacing = 0
+        buttonWrap.distribution = .fillEqually
     }
     
     override func setupAttributes() {
@@ -68,8 +80,10 @@ final class ModalView: BaseView {
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
         messageLabel.lineBreakMode = .byWordWrapping
-        submitButton.setTitleColor(AppColor.navy.value, for: .normal)
-        submitButton.titleLabel?.font = AppFont.title2.value
+        [submitButton, cancelButton].forEach {
+            $0.setTitleColor(AppColor.navy.value, for: .normal)
+            $0.titleLabel?.font = AppFont.title2.value
+        }
     }
     
 }
