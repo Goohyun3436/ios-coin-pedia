@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Toast
 
 class BaseViewController: UIViewController {
     
@@ -38,27 +39,37 @@ class BaseViewController: UIViewController {
 extension BaseViewController {
     
     func pushVC(_ vc: BaseViewController) {
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func popVC() {
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
-    func presentAlert(_ alert: AlertInfo) {
-        let alert = UIAlertController(
-            title: alert.title,
-            message: alert.message,
-            preferredStyle: .alert
-        )
+    func presentVC(_ vc: BaseViewController) {
+        present(vc, animated: true)
+    }
+    
+    func dismissVC() {
+        dismiss(animated: true)
+    }
+    
+    func presentToast(_ type: ToastType) {
+        let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
         
-        let ok = UIAlertAction(title: "확인", style: .default)
+        if var tbc = keyWindow?.rootViewController {
+            while let presentedViewController = tbc.presentedViewController {
+                tbc = presentedViewController
+            }
+            
+            switch type {
+            case .network:
+                tbc.view.makeToast(type.message, duration: 2.0, position: .bottom)
+            case .spinner:
+                tbc.view.makeToastActivity(.center)
+            }
+        }
         
-        alert.addAction(ok)
-        
-        alert.overrideUserInterfaceStyle = UIUserInterfaceStyle.dark
-        
-        present(alert, animated: true)
     }
     
 }

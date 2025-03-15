@@ -13,6 +13,7 @@ final class DetailViewModel: BaseViewModel {
     
     //MARK: - Input
     struct Input {
+        let viewWillAppear: ControlEvent<Void>
         let favoriteTap: ControlEvent<Void>
     }
     
@@ -29,17 +30,23 @@ final class DetailViewModel: BaseViewModel {
         let info: PublishRelay<CoinInfo>
         let analyzeHeaderTitle: Observable<String>
         let analyze: PublishRelay<CoinAnalyze>
-        let alert: PublishRelay<AlertInfo>
+        let presentVC: PublishRelay<BaseViewController>
+        let dismissVC: PublishRelay<Void>
+        let presentToast: PublishRelay<ToastType>
     }
     
     //MARK: - Private
     private struct Private {
         let infoHeaderTitle = "종목정보"
         let analyzeHeaderTitle = "투자지표"
+        let networkErrorCountMax = 3
+        let fetchTrigger = PublishRelay<Void>()
         let coin: BehaviorRelay<CoinThumbnail>
         let favoriteHandler: ((Bool) -> ())?
         let coinInfo = PublishRelay<CGMarketsResponse>()
         let networkError = PublishRelay<CGError>()
+        let networkErrorInfo = PublishRelay<ErrorModalInfo>()
+        let networkErrorCount = BehaviorRelay(value: 0)
         let disposeBag = DisposeBag()
     }
     
@@ -70,9 +77,18 @@ final class DetailViewModel: BaseViewModel {
         let info = PublishRelay<CoinInfo>()
         let analyzeHeaderTitle = Observable.just(priv.analyzeHeaderTitle)
         let analyze = PublishRelay<CoinAnalyze>()
-        let alert = PublishRelay<AlertInfo>()
+        let presentVC = PublishRelay<BaseViewController>()
+        let dismissVC = PublishRelay<Void>()
+        let presentToast = PublishRelay<ToastType>()
         
-        priv.coin
+        let networkError = priv.networkError.share(replay: 1)
+        
+        input.viewWillAppear
+            .bind(to: priv.fetchTrigger)
+            .disposed(by: priv.disposeBag)
+        
+        priv.fetchTrigger
+            .withLatestFrom(priv.coin)
             .flatMapLatest {
                 NetworkManager.shared.request(
                     CGRequest.markets([.krw], [$0.id]),
@@ -124,9 +140,45 @@ final class DetailViewModel: BaseViewModel {
             .bind(to: isFavorite)
             .disposed(by: priv.disposeBag)
         
-        priv.networkError
-            .map { AlertInfo(title: $0.title, message: $0.message) }
-            .bind(to: alert)
+        networkError
+            .withLatestFrom(priv.networkErrorCount)
+            .map { $0 + 1 }
+            .bind(to: priv.networkErrorCount)
+            .disposed(by: priv.disposeBag)
+        
+        networkError
+            .withUnretained(self)
+            .map { owner, error in
+                ErrorModalInfo(
+                    title: error.title,
+                    message: error.message,
+                    submitHandler: {
+                        owner.priv.fetchTrigger.accept(())
+                        
+                        let isMax = owner.priv.networkErrorCount.value >= owner.priv.networkErrorCountMax
+                        
+                        switch isMax {
+                        case true:
+                            presentToast.accept(.network)
+                        case false:
+                            dismissVC.accept(())
+                        }
+                    },
+                    cancelHandler: {
+                        dismissVC.accept(())
+                    }
+                )
+            }
+            .bind(to: priv.networkErrorInfo)
+            .disposed(by: priv.disposeBag)
+        
+        priv.networkErrorInfo
+            .map {
+                let vc = ModalViewController(viewModel: ModalViewModel(info: $0))
+                vc.modalPresentationStyle = .overFullScreen
+                return vc
+            }
+            .bind(to: presentVC)
             .disposed(by: priv.disposeBag)
         
         return Output(
@@ -141,7 +193,9 @@ final class DetailViewModel: BaseViewModel {
             info: info,
             analyzeHeaderTitle: analyzeHeaderTitle,
             analyze: analyze,
-            alert: alert
+            presentVC: presentVC,
+            dismissVC: dismissVC,
+            presentToast: presentToast
         )
     }
     

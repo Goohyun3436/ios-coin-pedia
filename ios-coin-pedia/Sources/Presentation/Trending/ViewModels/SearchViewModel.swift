@@ -31,8 +31,10 @@ final class SearchViewModel: BaseViewModel {
         let scrollOffset: PublishRelay<CGPoint>
         let searchText: BehaviorRelay<String>
         let coins: BehaviorRelay<[CGSearchCoinInfo]>
-        let alert: PublishRelay<AlertInfo>
+        let presentVC: PublishRelay<BaseViewController>
+        let dismissVC: PublishRelay<Void>
         let pushVC: PublishRelay<BaseViewController>
+        let presentToast: PublishRelay<ToastType>
     }
     
     //MARK: - Private
@@ -40,10 +42,13 @@ final class SearchViewModel: BaseViewModel {
         let searchBarPlaceholder = "검색어를 입력해주세요."
         let searchTypes = CGSearchType.allCases
         let initialSelectedSegmentIndex = 0
+        let networkErrorCountMax = 3
         let query: BehaviorRelay<String>
         let fetchTrigger = PublishRelay<String>()
         let searchError = PublishRelay<SearchError>()
         let networkError = PublishRelay<CGError>()
+        let networkErrorInfo = PublishRelay<ErrorModalInfo>()
+        let networkErrorCount = BehaviorRelay(value: 0)
         let disposeBag = DisposeBag()
     }
     
@@ -64,12 +69,15 @@ final class SearchViewModel: BaseViewModel {
         let selectedSegmentIndex = BehaviorRelay(value: priv.initialSelectedSegmentIndex)
         let scrollOffset = PublishRelay<CGPoint>()
         let coins = BehaviorRelay(value: [CGSearchCoinInfo]())
-        let alert = PublishRelay<AlertInfo>()
+        let presentVC = PublishRelay<BaseViewController>()
+        let dismissVC = PublishRelay<Void>()
         let pushVC = PublishRelay<BaseViewController>()
+        let presentToast = PublishRelay<ToastType>()
         
         let query = priv.query.share(replay: 1)
         let segmentTap = input.segmentTap.share(replay: 1)
         let searchTap = input.searchTap.share(replay: 1)
+        let networkError = priv.networkError.share(replay: 1)
         
         priv.fetchTrigger
             .flatMapLatest {
@@ -156,13 +164,58 @@ final class SearchViewModel: BaseViewModel {
             .disposed(by: priv.disposeBag)
         
         priv.searchError
-            .map { AlertInfo(title: $0.title, message: $0.message) }
-            .bind(to: alert)
+            .map {
+                ErrorModalInfo(
+                    title: $0.title,
+                    message: $0.message,
+                    submitButtonTitle: "확인",
+                    submitHandler: {
+                        dismissVC.accept(())
+                    }
+                )
+            }
+            .bind(to: priv.networkErrorInfo)
             .disposed(by: priv.disposeBag)
         
-        priv.networkError
-            .map { AlertInfo(title: $0.title, message: $0.message) }
-            .bind(to: alert)
+        networkError
+            .withLatestFrom(priv.networkErrorCount)
+            .map { $0 + 1 }
+            .bind(to: priv.networkErrorCount)
+            .disposed(by: priv.disposeBag)
+        
+        networkError
+            .withUnretained(self)
+            .map { owner, error in
+                ErrorModalInfo(
+                    title: error.title,
+                    message: error.message,
+                    submitHandler: {
+                        owner.priv.fetchTrigger.accept(owner.priv.query.value)
+                        
+                        let isMax = owner.priv.networkErrorCount.value >= owner.priv.networkErrorCountMax
+                        
+                        switch isMax {
+                        case true:
+                            presentToast.accept(.network)
+                        case false:
+                            dismissVC.accept(())
+                        }
+                    },
+                    cancelHandler: {
+                        dismissVC.accept(())
+                    }
+                )
+            }
+            .bind(to: priv.networkErrorInfo)
+            .disposed(by: priv.disposeBag)
+        
+        priv.networkErrorInfo
+            .map {
+                let vc = ModalViewController(viewModel: ModalViewModel(info: $0))
+                vc.modalPresentationStyle = .overFullScreen
+                return vc
+            }
+            .bind(to: presentVC)
             .disposed(by: priv.disposeBag)
         
         return Output(
@@ -173,8 +226,10 @@ final class SearchViewModel: BaseViewModel {
             scrollOffset: scrollOffset,
             searchText: searchText,
             coins: coins,
-            alert: alert,
-            pushVC: pushVC
+            presentVC: presentVC,
+            dismissVC: dismissVC,
+            pushVC: pushVC,
+            presentToast: presentToast
         )
     }
     

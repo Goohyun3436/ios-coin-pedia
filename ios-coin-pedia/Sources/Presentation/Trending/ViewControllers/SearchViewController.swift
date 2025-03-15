@@ -107,15 +107,27 @@ final class SearchViewController: BaseViewController {
             )
             .disposed(by: disposeBag)
         
-        output.alert
-            .bind(with: self, onNext: { owner, alert in
-                owner.presentAlert(alert)
+        output.presentVC
+            .bind(with: self, onNext: { owner, vc in
+                owner.presentVC(vc)
+            })
+            .disposed(by: disposeBag)
+        
+        output.dismissVC
+            .bind(with: self, onNext: { owner, _ in
+                owner.dismissVC()
             })
             .disposed(by: disposeBag)
         
         output.pushVC
             .bind(with: self, onNext: { owner, vc in
                 owner.pushVC(vc)
+            })
+            .disposed(by: disposeBag)
+        
+        output.presentToast
+            .bind(with: self, onNext: { owner, toastType in
+                owner.presentToast(toastType)
             })
             .disposed(by: disposeBag)
     }
